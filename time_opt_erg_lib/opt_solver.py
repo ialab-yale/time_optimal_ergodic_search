@@ -78,6 +78,9 @@ class AugmentedLagrangian(object):
 
 
 if __name__=='__main__':
+    '''
+        Example use case 
+    '''
     def f(x, args=None) : return 13*x[0]**2 + 10*x[0]*x[1] + 7*x[1]**2 + x[0] + x[1]
     def g(x, args) : return np.array([2*x[0]-5*x[1]-2])
     def h(x, args) : return x[0] + x[1] -1
