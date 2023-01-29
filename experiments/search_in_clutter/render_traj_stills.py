@@ -5,6 +5,7 @@ from jax import vmap
 
 from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
+from visualization_msgs.msg import Marker
 
 from build_solver import build_erg_time_opt_solver
 import pickle as pkl
@@ -22,6 +23,20 @@ if __name__ =="__main__":
     br = tf.TransformBroadcaster()
     traj_pub = rospy.Publisher(agent_name + '/planned_traj', Trajectory, queue_size=10)
 
+    text_pub = rospy.Publisher(agent_name + '/viz/text', Marker, queue_size=10)
+    text_msg = Marker()
+    text_msg.header.frame_id = "world"
+    text_msg.color.a = 1.0
+    text_msg.color.r = 0.0
+    text_msg.color.g = 0.0
+    text_msg.color.b = 0.0
+    text_msg.scale.z = 0.1
+    text_msg.type = Marker.TEXT_VIEW_FACING
+    text_msg.text = "Testing"
+    text_msg.pose.position.x = 0.
+    text_msg.pose.position.y = 0.4
+    text_msg.pose.position.z = 0.5
+
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
@@ -29,7 +44,7 @@ if __name__ =="__main__":
         'N' : 200, 
         'x0' : np.array([0.5, 0.1]),
         'xf' : np.array([2.0, 3.2]),
-        'erg_ub' : 0.01,
+        'erg_ub' : 0.2,
         'alpha' : 0.5,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
@@ -40,25 +55,37 @@ if __name__ =="__main__":
     traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
 
     print('publishing trajectory')
-    while not rospy.is_shutdown():
-        solver.solve(max_iter=100, eps=1e-7)
-        print('Solving trajectory')
+
+    erg_ubs = [0.2, 0.1, 0.01, 0.002]
+    # erg_ubs = erg_ubs[::-1]
+
+    for i, erg_ub in enumerate(erg_ubs):
+        args.update({'erg_ub': erg_ub})
+
+        print('Solving trajectory for upper bound: ', erg_ub)
+        solver.reset()
+        solver.solve(args=args, max_iter=10000, eps=1e-7)
         sol = solver.get_solution()
-        for i, _pt in enumerate(sol['x']):
-            traj_msg.points[i].x = _pt[0]
-            traj_msg.points[i].y = _pt[1]
+        print("Solved!!!")            
 
-        traj_pub.publish(traj_msg)
+        text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
+        print('TAKE PICTURE NOW', text_msg.text)
+        for _ in range (100):
+            for i, _pt in enumerate(sol['x']):
+                traj_msg.points[i].x = _pt[0]
+                traj_msg.points[i].y = _pt[1]
 
-        br.sendTransform(
-                (args['x0'][0], args['x0'][1], 0.35),
-                (0.,0.,0.,1.),
-                rospy.Time.now(),
-                agent_name,
-                "world"
-            )
-        rate.sleep()
-    
+            traj_pub.publish(traj_msg)
+            # text_pub.publish(text_msg)
+            br.sendTransform(
+                    (args['x0'][0], args['x0'][1], 0.35),
+                    (0.,0.,0.,1.),
+                    rospy.Time.now(),
+                    agent_name,
+                    "world"
+                )
+            rate.sleep()
+        
 
 
 

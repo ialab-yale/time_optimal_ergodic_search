@@ -34,7 +34,7 @@ def build_erg_time_opt_solver(args):
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 
-    with open('../../config/cluttered_env.yml', 'r') as file:
+    with open('../../config/cluttered_env_v2.yml', 'r') as file:
         obs_info = yaml.safe_load(file)
 
     obs = []

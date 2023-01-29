@@ -12,7 +12,7 @@ args = {
     'x0' : np.array([0.5, 0.1]),
     'xf' : np.array([2.0, 3.2]),
     'erg_ub' : 0.01,
-    'alpha' : 0.5,
+    'alpha' : 0.2,
     'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
 }
 solver, obs = build_erg_time_opt_solver(args)
@@ -39,6 +39,14 @@ for ob in obs:
 
 plt.plot(sol['x'][:,0], sol['x'][:,1],'g.')
 plt.plot(sol['x'][:,0], sol['x'][:,1])
-    
+
+sol.update({
+    'x': np.array(sol['x']),
+    'u' : np.array(sol['u']),
+    'tf': np.array(sol['tf'])
+})
+
+_file = open('test_traj_max_erg_002.pkl', 'wb')
+pkl.dump(sol, _file)
 
 plt.show()

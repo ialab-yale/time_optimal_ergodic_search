@@ -15,7 +15,7 @@ class Obstacle(object):
         self.half_dims = np.array(obs_dict['half_dims'])
         self.dims = 2*self.half_dims
         self.buff = buff
-        self.th = obs_dict['rot']
+        self.th = -np.pi*obs_dict['rot']/180.
         self.rot = rot(self.th)
         self.rotT = self.rot.T
         self.inv_rot = lambda p: self.rotT@(self.pos - p)

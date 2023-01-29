@@ -1,0 +1,30 @@
+#  We negated all the rotations and rotated clockwise
+obstacles:  
+  - name : "obs_1"
+    pos : [0.82, 2.92]
+    rot: -4.75
+    half_dims : [0.1, 0.1]
+  - name : "obs_2"
+    pos : [2.61, 3.13]
+    rot: -20
+    half_dims : [0.07, 0.07]
+  - name : "obs_3"
+    pos : [2.97, 1.44]
+    rot: 47.5
+    half_dims : [0.205, 0.0705]
+  - name : "obs_4"
+    pos : [1.82, 1.69]
+    rot: 0.0
+    half_dims : [0.15, 0.15]
+  - name : "obs_5"
+    pos : [0.78, 1.39]
+    rot: 60.25
+    half_dims : [0.25, 0.05]
+  - name : "obs_6"
+    pos : [2.74, 0.14]
+    rot: 44.5
+    half_dims : [0.07, 0.07]
+  - name : "obs_7"
+    pos : [1.24, 0.11]
+    rot: 18.0
+    half_dims : [0.1, 0.1]

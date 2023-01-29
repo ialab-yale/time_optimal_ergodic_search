@@ -56,6 +56,10 @@ class AugmentedLagrangeSolver(object):
         self.grad_lagrangian = val_dldx
         self.step = step
 
+    def reset(self):
+        for _key in self.avg_sq_grad:
+            self.avg_sq_grad.update({_key : np.zeros_like(self.avg_sq_grad[_key])})
+
     def get_solution(self):
         return self.solution
         # return self._unravel(self._flat_solution)
