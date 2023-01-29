@@ -1,0 +1,66 @@
+obstacles:
+  - name : "obs_0"
+    pos : [2.84, 1.82]
+    rot: 0.0
+    half_dims : [.05, 0.09]
+    shape : "box"
+  - name : "obs_1"
+    pos : [1.26, 3.31]
+    rot: 0.0
+    half_dims : [0.15, 0.15]
+    shape : "box"
+  - name : "obs_2"
+    pos : [2.62, 0.08]
+    rot: 0.0
+    half_dims : [0.105, 0.105]
+    shape : "box"
+  - name : "obs_3"
+    pos : [2.5, 2.85]
+    rot: 0.0
+    half_dims : [0.1, 0.1]
+    shape : "box"
+  - name : "obs_4"
+    pos : [3.05, 1.08]
+    rot: -0.7853981633974483
+    half_dims : [0.0675, 0.0675]
+    shape : "box"
+  - name : "obs_5"
+    pos : [1.77, -0.47]
+    rot: -0.7853981633974483
+    half_dims : [0.0675, 0.0675]
+    shape : "box"
+  - name : "obs_6"
+    pos : [0.64, 2.8]
+    rot: -0.7853981633974483
+    half_dims : [0.1, 0.1]
+    shape : "box"
+  - name : "obs_7"
+    pos : [0.82, 1.95]
+    rot: -0.7853981633974483
+    half_dims : [0.0675, 0.0675]
+    shape : "box"
+  - name : "obs_8"
+    pos : [0.73, 1.04]
+    rot: -0.7853981633974483
+    half_dims : [0.0675, 0.0675]
+    shape : "box"
+  - name : "obs_9"
+    pos : [1.03, -0.07]
+    rot: 0.0
+    half_dims : [0.0675, 0.0675]
+    shape : "box"
+  - name : "obs_10"
+    pos : [1.7, 2.4]
+    rot: 0.0
+    half_dims : [0.205, 0.07]
+    shape : "box"
+  - name : "obs_11"
+    pos : [1.65, 0.58]
+    rot: -5.497787143782138
+    half_dims : [0.050499999999999996, 0.248]
+    shape : "box"
+  - name : "obs_12"
+    pos : [1.87, 1.64]
+    rot: 0.0
+    half_dims : [0.235, 0.235]
+    shape : "box"

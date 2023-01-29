@@ -1,3 +1,0 @@
-<launch>
-    <rosparam file="$(find my_custom_package)/config/my_params.yaml" />
-</launch>
