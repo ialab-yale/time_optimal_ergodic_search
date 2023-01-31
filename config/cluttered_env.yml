@@ -21,27 +21,27 @@ obstacles:
     shape : "box"
   - name : "obs_4"
     pos : [3.05, 1.08]
-    rot: -0.7853981633974483
+    rot: -45 #0.7853981633974483
     half_dims : [0.0675, 0.0675]
     shape : "box"
   - name : "obs_5"
     pos : [1.77, -0.47]
-    rot: -0.7853981633974483
+    rot: -45 #0.7853981633974483
     half_dims : [0.0675, 0.0675]
     shape : "box"
   - name : "obs_6"
     pos : [0.64, 2.8]
-    rot: -0.7853981633974483
+    rot: -45 #0.7853981633974483
     half_dims : [0.1, 0.1]
     shape : "box"
   - name : "obs_7"
     pos : [0.82, 1.95]
-    rot: -0.7853981633974483
+    rot: -45 #0.7853981633974483
     half_dims : [0.0675, 0.0675]
     shape : "box"
   - name : "obs_8"
     pos : [0.73, 1.04]
-    rot: -0.7853981633974483
+    rot: -45 #0.7853981633974483
     half_dims : [0.0675, 0.0675]
     shape : "box"
   - name : "obs_9"
@@ -56,7 +56,7 @@ obstacles:
     shape : "box"
   - name : "obs_11"
     pos : [1.65, 0.58]
-    rot: -5.497787143782138
+    rot: -120 #5.497787143782138
     half_dims : [0.050499999999999996, 0.248]
     shape : "box"
   - name : "obs_12"

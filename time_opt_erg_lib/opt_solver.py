@@ -68,16 +68,18 @@ class AugmentedLagrangeSolver(object):
         if args is None:
             args = self.def_args
         _eps = 1.0
+        _prev_val   = None
+
         for k in range(max_iter):
             # self.solution, _val, self.avg_sq_grad = self.step(self.solution, args, self.avg_sq_grad, self.c)
             self.solution, self.dual_solution, self.avg_sq_grad, _val = self.step(self.solution, self.dual_solution, self.avg_sq_grad, args, self.c)
             self.c = 1.001*self.c
-            if self._prev_val is None:
-                self._prev_val = _val
+            if _prev_val is None:
+                _prev_val = _val
             else:
                 # print(_val)
-                _eps = np.abs(_val - self._prev_val)
-                self._prev_val = _val
+                _eps = np.abs(_val - _prev_val)
+                _prev_val = _val
             if _eps < eps:
                 print('done in ', k, ' iterations')
                 break

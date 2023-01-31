@@ -27,8 +27,8 @@ from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver
 import yaml
 import pickle as pkl
 
-def build_erg_time_opt_solver(args):
-    basis           = BasisFunc(n_basis=[10,10])
+def build_erg_time_opt_solver(init_sol, args):
+    basis           = BasisFunc(n_basis=[8,8])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = DoubleIntegrator()
     n,m = robot_model.n, robot_model.m
@@ -126,15 +126,12 @@ def build_erg_time_opt_solver(args):
         # return np.array(0.)
 
 
-    x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
-    u = np.zeros((args['N'], robot_model.m))
-    init_sol = {'x': x, 'u' : u, 'tf': np.array(10.0)}
     solver = AugmentedLagrangeSolver(
                     init_sol,
                     loss, 
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=0.0005,
+                    step_size=1e-3,
                     c=1.0)
     return solver

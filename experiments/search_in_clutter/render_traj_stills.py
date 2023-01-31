@@ -42,7 +42,7 @@ if __name__ =="__main__":
 
     args = {
         'N' : 200, 
-        'x0' : np.array([0.5, 0.1]),
+        'x0' : np.array([1.5, -0.8]),
         'xf' : np.array([2.0, 3.2]),
         'erg_ub' : 0.2,
         'alpha' : 0.5,

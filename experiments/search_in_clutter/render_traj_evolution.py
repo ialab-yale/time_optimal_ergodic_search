@@ -42,12 +42,21 @@ if __name__ =="__main__":
 
     args = {
         'N' : 200, 
-        'x0' : np.array([0.5, 0.1]),
+        'x0' : np.array([1.5, -0.8]),
         'xf' : np.array([2.0, 3.2]),
         'erg_ub' : 0.2,
         'alpha' : 0.5,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
+    # <-- prev values 
+    # args = {
+    #     'N' : 200, 
+    #     'x0' : np.array([0.5, 0.1]),
+    #     'xf' : np.array([2.0, 3.2]),
+    #     'erg_ub' : 0.2,
+    #     'alpha' : 0.5,
+    #     'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
+    # }
     solver, obs = build_erg_time_opt_solver(args)
     sol = solver.get_solution()
 

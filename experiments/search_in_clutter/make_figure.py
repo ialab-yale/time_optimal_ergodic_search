@@ -20,7 +20,6 @@ solver.solve(max_iter=10000, eps=1e-7)
 sol = solver.get_solution()
 
 
-sol = solver.get_solution()
 
 ## <---- below draws the objects ---->
 # for obs in traj_opt.obs:
