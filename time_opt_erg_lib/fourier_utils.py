@@ -26,7 +26,7 @@ def recon_from_fourier(basis_coef):
     pass
 
 class BasisFunc(object):
-    def __init__(self, n_basis) -> None:
+    def __init__(self, n_basis, emap=None) -> None:
         kmesh = np.meshgrid(
                     *[np.arange(0,n_max, step=1) for n_max in n_basis]
                 )
@@ -40,6 +40,8 @@ class BasisFunc(object):
         ])
 
         self._fk = lambda k, x: np.prod(np.cos(x*k))
+        if emap is not None:
+            self._fk = lambda k, x: np.prod(np.cos(emap(x)*k))
         self.fk_kvmap = vmap(self._fk, in_axes=(0, None))
         self.fk_xvmap = vmap(self._fk, in_axes=(None, 0))
         # self.fk_vmap = partial(self.fk_kvmap, np.array([0.1,0.2]))
