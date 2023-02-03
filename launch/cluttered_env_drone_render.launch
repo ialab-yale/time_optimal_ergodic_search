@@ -1,0 +1,8 @@
+<launch>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find time_optimal_ergodic_search)/rviz/cluttered_env.rviz" />
+
+    <rosparam command="load" file="$(find time_optimal_ergodic_search)/config/cluttered_env_v2.yml" />
+    <node name="drone_viz" pkg="drone_env_viz" type="drone_viz.py" />
+    <node name="env_viz" pkg="drone_env_viz" type="env_viz.py" />
+
+</launch>

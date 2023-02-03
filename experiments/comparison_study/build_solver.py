@@ -27,7 +27,7 @@ from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver
 import yaml
 import pickle as pkl
 
-def build_erg_time_opt_solver(init_sol, args):
+def build_erg_time_opt_solver(init_sol, args, step_size=1e-3, c=1.0):
     basis           = BasisFunc(n_basis=[8,8])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = DoubleIntegrator()
@@ -132,8 +132,8 @@ def build_erg_time_opt_solver(init_sol, args):
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=1e-3,
-                    c=1.0)
+                    step_size=step_size,
+                    c=c)
     return solver
 
 
@@ -250,4 +250,4 @@ def build_solver(init_sol, args, dt=0.1):
                     args, 
                     step_size=1e-3,
                     c=1.0)
-    return solver
+    return solver, loss

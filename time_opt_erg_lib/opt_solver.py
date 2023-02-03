@@ -64,7 +64,7 @@ class AugmentedLagrangeSolver(object):
         return self.solution
         # return self._unravel(self._flat_solution)
 
-    def solve(self, args=None, max_iter=100000, eps=1e-5):
+    def solve(self, args=None, max_iter=100000, eps=1e-5, alpha=1.001):
         if args is None:
             args = self.def_args
         _eps = 1.0
@@ -73,7 +73,7 @@ class AugmentedLagrangeSolver(object):
         for k in range(max_iter):
             # self.solution, _val, self.avg_sq_grad = self.step(self.solution, args, self.avg_sq_grad, self.c)
             self.solution, self.dual_solution, self.avg_sq_grad, _val = self.step(self.solution, self.dual_solution, self.avg_sq_grad, args, self.c)
-            self.c = 1.001*self.c
+            self.c = alpha*self.c
             if _prev_val is None:
                 _prev_val = _val
             else:
@@ -82,7 +82,8 @@ class AugmentedLagrangeSolver(object):
                 _prev_val = _val
             if _eps < eps:
                 print('done in ', k, ' iterations')
-                break
+                return
+        print('unsuccessful, tol: ', _eps)
 
 if __name__=='__main__':
     '''

@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="7.25in"
-   height="1.3476241in"
-   viewBox="0 0 184.15 34.229651"
+   width="7.2604327in"
+   height="1.3580573in"
+   viewBox="0 0 184.41499 34.494654"
    version="1.1"
    id="svg5"
    xml:space="preserve"
@@ -25,9 +25,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="2.0409673"
-     inkscape:cx="455.42131"
-     inkscape:cy="71.044744"
+     inkscape:zoom="2.8863636"
+     inkscape:cx="321.33858"
+     inkscape:cy="78.645669"
      inkscape:window-width="2560"
      inkscape:window-height="1403"
      inkscape:window-x="1920"
@@ -70,7 +70,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(1.0520813e-7,-16.570348)"><g
+     transform="translate(0.13249961,-16.437845)"><rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264999;stroke-opacity:1"
+       id="rect367"
+       width="44.112995"
+       height="34.229652"
+       x="-1.0520813e-07"
+       y="16.570349" /><g
        id="g887"><image
          width="282.57501"
          height="272.78543"
@@ -95,7 +101,13 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.22512px;font-family:FreeSerif;-inkscape-font-specification:FreeSerif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.278578;stroke-dasharray:none;stroke-opacity:1"
            x="26.365503"
            y="20.961031"
-           id="tspan1116">Erg. Upper Bnd: 0.2</tspan></text></g><g
+           id="tspan1116">Erg. Upper Bnd: 0.2</tspan></text></g><rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264999;stroke-opacity:1"
+       id="rect923"
+       width="44.112995"
+       height="34.229652"
+       x="46.678997"
+       y="16.570345" /><g
        id="g881"
        transform="translate(-2.8560613)"><image
          width="282.57501"
@@ -121,7 +133,19 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.22512px;font-family:FreeSerif;-inkscape-font-specification:FreeSerif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.278578;stroke-dasharray:none;stroke-opacity:1"
            x="76.080795"
            y="20.972157"
-           id="tspan1139">Erg. Upper Bnd: 0.1</tspan></text></g><g
+           id="tspan1139">Erg. Upper Bnd: 0.1</tspan></text></g><rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264999;stroke-opacity:1"
+       id="rect927"
+       width="44.112995"
+       height="34.229652"
+       x="140.037"
+       y="16.570349" /><rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264999;stroke-opacity:1"
+       id="rect929"
+       width="44.112995"
+       height="34.229652"
+       x="140.037"
+       y="16.570349" /><g
        id="g869"><image
          width="282.57501"
          height="272.78543"
@@ -146,7 +170,13 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.22512px;font-family:FreeSerif;-inkscape-font-specification:FreeSerif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.278578;stroke-dasharray:none;stroke-opacity:1"
            x="164.17738"
            y="20.972157"
-           id="tspan1145">Erg. Upper Bnd: 0.002</tspan></text></g><g
+           id="tspan1145">Erg. Upper Bnd: 0.002</tspan></text></g><rect
+       style="fill:#000000;stroke:#000000;stroke-width:0.264999;stroke-opacity:1"
+       id="rect925"
+       width="44.112995"
+       height="34.229652"
+       x="93.358002"
+       y="16.570349" /><g
        id="g875"
        transform="translate(-5.7121287)"><image
          width="282.57501"

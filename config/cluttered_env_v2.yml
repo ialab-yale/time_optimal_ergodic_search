@@ -1,30 +1,58 @@
-#  We negated all the rotations and rotated clockwise
+# obstacles:  
+#   - name : "obs_1"
+#     pos : [1.24, 2.71]
+#     rot: 15
+#     half_dims : [0.225, 0.225]
+#   - name : "obs_2"
+#     pos : [2.61, 3.13]
+#     rot: -20
+#     half_dims : [0.15750000000000003, 0.15750000000000003]
+#   - name : "obs_3"
+#     pos : [2.97, 1.44]
+#     rot: 47.5
+#     half_dims : [0.46125, 0.158625]
+#   - name : "obs_4"
+#     pos : [1.82, 1.69]
+#     rot: 0.0
+#     half_dims : [0.33749999999999997, 0.33749999999999997]
+#   - name : "obs_5"
+#     pos : [0.78, 1.39]
+#     rot: 60.25
+#     half_dims : [0.5625, 0.1125]
+#   - name : "obs_6"
+#     pos : [2.74, 0.14]
+#     rot: 44.5
+#     half_dims : [0.15750000000000003, 0.15750000000000003]
+#   - name : "obs_7"
+#     pos : [1.24, 0.11]
+#     rot: 18.0
+#     half_dims : [0.225, 0.225]
 obstacles:  
   - name : "obs_1"
-    pos : [0.82, 2.92]
-    rot: -4.75
-    half_dims : [0.1, 0.1]
+    pos : [1.24, 2.71]
+    rot: 15
+    half_dims : [0.2, 0.2]
   - name : "obs_2"
     pos : [2.61, 3.13]
     rot: -20
-    half_dims : [0.07, 0.07]
+    half_dims : [0.12, 0.12]
   - name : "obs_3"
     pos : [2.97, 1.44]
     rot: 47.5
-    half_dims : [0.205, 0.0705]
+    half_dims : [0.42125, 0.118625]
   - name : "obs_4"
     pos : [1.82, 1.69]
     rot: 0.0
-    half_dims : [0.15, 0.15]
+    half_dims : [0.30749999999999997, 0.30749999999999997]
   - name : "obs_5"
     pos : [0.78, 1.39]
     rot: 60.25
-    half_dims : [0.25, 0.05]
+    half_dims : [0.3625, 0.0825]
   - name : "obs_6"
     pos : [2.74, 0.14]
     rot: 44.5
-    half_dims : [0.07, 0.07]
+    half_dims : [0.11750000000000003, 0.11750000000000003]
   - name : "obs_7"
     pos : [1.24, 0.11]
     rot: 18.0
-    half_dims : [0.1, 0.1]
+    half_dims : [0.205, 0.205]
