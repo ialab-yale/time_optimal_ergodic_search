@@ -9,6 +9,7 @@ class AugmentedLagrangeSolver(object):
     def __init__(self, x0, loss, eq_constr, ineq_constr, args=None, step_size=1e-3, c=1.0):
         self.def_args = args
         self.loss = loss 
+        self._c_def = c
         self.c = c
         self.eq_constr   = eq_constr
         self.ineq_constr = ineq_constr
@@ -59,6 +60,7 @@ class AugmentedLagrangeSolver(object):
     def reset(self):
         for _key in self.avg_sq_grad:
             self.avg_sq_grad.update({_key : np.zeros_like(self.avg_sq_grad[_key])})
+        self.c = self._c_def
 
     def get_solution(self):
         return self.solution

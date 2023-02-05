@@ -60,7 +60,7 @@ if __name__ =="__main__":
     solver, obs = build_erg_time_opt_solver(args)
     sol = solver.get_solution()
 
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(60)
     traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
 
     print('publishing trajectory')
