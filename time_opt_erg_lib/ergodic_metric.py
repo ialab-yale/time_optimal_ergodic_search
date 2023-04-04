@@ -9,4 +9,5 @@ class ErgodicMetric(object):
         # lamk = np.exp(-0.8 * np.linalg.norm(k, axis=1))
         # lamk = np.ones((len(k), 1))
     def __call__(self, ck, phik):
+        # return (self.lamk * (ck - phik)**2).flatten()
         return np.sum(self.lamk * (ck - phik)**2)

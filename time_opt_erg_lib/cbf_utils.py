@@ -15,6 +15,9 @@ def dist_func(x):
 def sdf2cbf(dfdt, constr):
     return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:2]) - (1.-alpha) * constr(x[:2])
 
+def sdf3cbf(dfdt, constr):
+    return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constr(x[:3])
+
 # # Regular Inequality Constraints
 # def sdf2cbf(f, constr):
 #     return lambda x, u, alpha: constr(x)
