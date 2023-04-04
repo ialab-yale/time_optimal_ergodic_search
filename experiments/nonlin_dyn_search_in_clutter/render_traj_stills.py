@@ -7,7 +7,7 @@ from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 
-from build_solver import build_erg_time_opt_solver
+from build_3D_solver import build_erg_time_opt_solver
 import pickle as pkl
 
 import rospy
@@ -40,19 +40,12 @@ if __name__ =="__main__":
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
-    args = {
-        'N' : 200, 
-        'x0' : np.array([1.5, -0.8]),
-        'xf' : np.array([2.0, 3.2]),
-        'erg_ub' : 0.2,
-        'alpha' : 0.5,
-        'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
-    }
-    solver, obs = build_erg_time_opt_solver(args)
+
+    solver, obs, args = build_erg_time_opt_solver()
     sol = solver.get_solution()
 
     rate = rospy.Rate(10)
-    traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
+    traj_msg.points = [Point(_pt[0], _pt[1], _pt[2]) for _pt in sol['x']]
 
     print('publishing trajectory')
 
@@ -74,6 +67,7 @@ if __name__ =="__main__":
             for i, _pt in enumerate(sol['x']):
                 traj_msg.points[i].x = _pt[0]
                 traj_msg.points[i].y = _pt[1]
+                traj_msg.points[i].z = _pt[2]
 
             traj_pub.publish(traj_msg)
             # text_pub.publish(text_msg)
