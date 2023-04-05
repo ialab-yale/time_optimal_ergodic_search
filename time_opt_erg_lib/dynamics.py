@@ -80,8 +80,8 @@ class ThreeDAirCraftModel(object):
             w1 = u[1]
             w2 = u[2] 
             return np.array([
-                v * np.cos(x[3]) * np.cos(x[4]),
-                v * np.cos(x[3]) * np.sin(x[4]),
+                v * np.cos(x[4]) * np.cos(x[3]),
+                v * np.sin(x[4]) * np.cos(x[3]),
                 v * np.sin(x[3]),
                 w1, 
                 w2

@@ -42,7 +42,7 @@ class TargetDistribution(object):
         return 1.0
 
 def build_erg_time_opt_solver():
-    basis           = BasisFunc(n_basis=[8,8,8])
+    basis           = BasisFunc(n_basis=[4,4,4])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = ThreeDAirCraftModel()
     n,m = robot_model.n, robot_model.m
@@ -50,26 +50,26 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 400, 
-        'x0' : np.array([0.1, 0.12, 0.1, 0., 0.]),
-        'xf' : np.array([2.5, 9.0, 2.5, 0., 0.]),
-        'erg_ub' : 0.005,
+        'x0' : np.array([2.5, 0.1, 2.5, 0., np.pi/2]),
+        'xf' : np.array([2.5, 9.0, 2.5, 0., np.pi/2]),
+        'erg_ub' : 0.001,
         'alpha' : 0.2,
         'wrksp_bnds' : np.array([[0.,5],[0.,10],[0.,5.]])
     }
     _key = jnp_random.PRNGKey(0)
 
-    _N_obs = 10
+    _N_obs = 20
     obs = []
     cbf_constr = []
     for i in range(_N_obs):
         _key, _subkey = jnp_random.split(_key)
         _pos = jnp_random.uniform(_subkey, shape=(3,), 
-                        minval=np.array([0,0,0]), maxval=np.array([0,10,5]))
+                        minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
         _key, _subkey = jnp_random.split(_key)
-        _rad = jnp_random.uniform(_subkey, shape=(3,), minval=0.15, maxval=.5) 
+        _rad = jnp_random.uniform(_subkey, shape=(3,), minval=0.5, maxval=.75) 
         _ob_inf = {
-            'pos' : _pos, 
-            'half_dims' : _rad,
+            'pos' : onp.array(_pos), 
+            'half_dims' : onp.array(_rad),
             'rot': 0.
         }
         _ob = Obstacle(_ob_inf, p=2)
@@ -78,6 +78,7 @@ def build_erg_time_opt_solver():
             # th=obs_info[obs_name]['rot']
         obs.append(_ob)
         cbf_constr.append(sdf3cbf(robot_model.dfdt, _ob.distance3))
+
 
     args.update({
         'phik' : get_phik(target_distr.evals, basis),
@@ -162,5 +163,5 @@ def build_erg_time_opt_solver():
                     ineq_constr, 
                     args, 
                     step_size=0.0005,
-                    c=1.0)
+                    c=0.9)
     return solver, obs, args

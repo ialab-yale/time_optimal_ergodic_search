@@ -11,6 +11,7 @@ def rot(th):
 
 class Obstacle(object): 
     def __init__(self, obs_dict, buff=0.1, p=4):
+        self._obs_dict = obs_dict
         self.pos = np.array(obs_dict['pos'])
         self.half_dims = np.array(obs_dict['half_dims'])
         self.dims = 2*self.half_dims
@@ -21,6 +22,10 @@ class Obstacle(object):
         self.inv_rot = lambda p: self.rotT@(self.pos - p)
         # self.min_dist = min_dist
         self.p = p
+    
+    def __getitem__(self, key):
+        return self._obs_dict[key]
+
     def draw(self):
         rect = plt.Rectangle(self.pos-self.half_dims, 
                             self.dims[0], self.dims[1])

@@ -4,6 +4,8 @@ import jax.numpy as jnp
 from jax import vmap
 
 from drone_env_viz.msg import Trajectory
+from aircraft_viz import AgentViz
+from env_viz import EnvViz
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 
@@ -42,43 +44,38 @@ if __name__ =="__main__":
 
 
     solver, obs, args = build_erg_time_opt_solver()
-    sol = solver.get_solution()
 
+    env_viz = EnvViz(obs)
+    agent_viz = AgentViz(agent_name)
     rate = rospy.Rate(10)
-    traj_msg.points = [Point(_pt[0], _pt[1], _pt[2]) for _pt in sol['x']]
 
-    print('publishing trajectory')
+    print('Solving trajectory')
+    solver.solve(args=args, max_iter=100, eps=1e-7)
+    sol = solver.get_solution()
+    print("Solved!!!")            
 
-    erg_ubs = [0.2, 0.1, 0.01, 0.002]
-    # erg_ubs = erg_ubs[::-1]
-
-    for i, erg_ub in enumerate(erg_ubs):
-        args.update({'erg_ub': erg_ub})
-
-        print('Solving trajectory for upper bound: ', erg_ub)
-        solver.reset()
-        solver.solve(args=args, max_iter=10000, eps=1e-7)
+    text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(args['erg_ub'])
+    print('TAKE PICTURE NOW', text_msg.text)
+    while not rospy.is_shutdown():
+        solver.solve(args=args, max_iter=100, eps=1e-7)
         sol = solver.get_solution()
-        print("Solved!!!")            
+        # for i, _pt in enumerate(sol['x']):
+        #     traj_msg.points[i].x = _pt[0]
+        #     traj_msg.points[i].y = _pt[1]
+        #     traj_msg.points[i].z = _pt[2]
 
-        text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
-        print('TAKE PICTURE NOW', text_msg.text)
-        for _ in range (100):
-            for i, _pt in enumerate(sol['x']):
-                traj_msg.points[i].x = _pt[0]
-                traj_msg.points[i].y = _pt[1]
-                traj_msg.points[i].z = _pt[2]
-
-            traj_pub.publish(traj_msg)
-            # text_pub.publish(text_msg)
-            br.sendTransform(
-                    (args['x0'][0], args['x0'][1], 0.35),
-                    (0.,0.,0.,1.),
-                    rospy.Time.now(),
-                    agent_name,
-                    "world"
-                )
-            rate.sleep()
+        # traj_pub.publish(traj_msg)
+        agent_viz.callback_trajectory(sol['x'])
+        # text_pub.publish(text_msg)
+        # br.sendTransform(
+        #         (args['x0'][0], args['x0'][1], 0.35),
+        #         (0.,0.,0.,1.),
+        #         rospy.Time.now(),
+        #         agent_name,
+        #         "world"
+        #     )
+        env_viz.pub_env()
+        rate.sleep()
         
 
 
