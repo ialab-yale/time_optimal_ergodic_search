@@ -80,7 +80,6 @@ class AugmentedLagrangeSolver(object):
             if _prev_val is None:
                 _prev_val = _val
             else:
-                # print(_val)
                 _eps = np.abs(_val - _prev_val)
                 _prev_val = _val
             if _eps < eps:

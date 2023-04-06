@@ -114,7 +114,7 @@ def build_erg_time_opt_solver(init_sol, args):
         #            for _cbf_ineq in cbf_constr]
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_box = [(np.abs(u) - 1.).flatten()]
+        _ctrl_box = [(u - 1.).flatten(), (-u-1).flatten()]
         return np.concatenate(_erg_ineq + _ctrl_box)# + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)
@@ -132,6 +132,6 @@ def build_erg_time_opt_solver(init_sol, args):
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=1e-3,
-                    c=1.0)
+                    step_size=1e-4,
+                    c=0.6)
     return solver
