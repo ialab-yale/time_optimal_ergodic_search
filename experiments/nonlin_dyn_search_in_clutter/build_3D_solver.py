@@ -42,17 +42,17 @@ class TargetDistribution(object):
         return 1.0
 
 def build_erg_time_opt_solver():
-    basis           = BasisFunc(n_basis=[4,4,4])
+    basis           = BasisFunc(n_basis=[8,8,8])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = ThreeDAirCraftModel()
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 
     args = {
-        'N' : 400, 
+        'N' : 500, 
         'x0' : np.array([2.5, 0.1, 2.5, 0., np.pi/2]),
         'xf' : np.array([2.5, 9.0, 2.5, 0., np.pi/2]),
-        'erg_ub' : 0.001,
+        'erg_ub' : 0.0005,
         'alpha' : 0.2,
         'wrksp_bnds' : np.array([[0.,5],[0.,10],[0.,5.]])
     }
@@ -87,14 +87,6 @@ def build_erg_time_opt_solver():
     ## <--- I DO NOT LIKE THIS
     workspace_bnds = args['wrksp_bnds']
 
-    # opt_args = {
-    #     'N' : 100, 
-    #     'x0' : np.array([0.1, 0.1, 0., 0.]),
-    #     'xf' : np.array([0.9, 0.9, 0., 0.]),
-    #     'phik' : get_phik(target_distr.evals, basis),
-    #     'erg_ub' : 0.1,
-    #     # 'alpha' : 0.8,
-    # }
 
     @vmap
     def emap(x):
@@ -155,13 +147,13 @@ def build_erg_time_opt_solver():
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
     u = np.zeros((args['N'], robot_model.m))
-    init_sol = {'x': x, 'u' : u, 'tf': np.array(25.0)}
+    init_sol = {'x': x, 'u' : u, 'tf': np.array(30.0)}
     solver = AugmentedLagrangeSolver(
                     init_sol,
                     loss, 
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=0.0005,
-                    c=0.9)
+                    step_size=0.001,
+                    c=0.6)
     return solver, obs, args

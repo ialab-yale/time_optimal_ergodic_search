@@ -30,7 +30,7 @@ class EnvViz(object):
             _ob_marker.scale.x = ob['half_dims'][0]*2
             _ob_marker.scale.y = ob['half_dims'][1]*2
             _ob_marker.scale.z = ob['half_dims'][2]*2
-            _ob_marker.color.a = 0.8
+            _ob_marker.color.a = 1.0
             rgb = np.random.uniform(0,1, size=(3,))
             _ob_marker.color.r = rgb[0]
             _ob_marker.color.g = rgb[1]
