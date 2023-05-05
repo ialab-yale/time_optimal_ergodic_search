@@ -23,7 +23,7 @@ from time_opt_erg_lib.cbf_utils import sdf2cbf
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
 
-from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver
+from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver, ConstrainedAdamSolver
 import yaml
 import pickle as pkl
 
@@ -126,12 +126,12 @@ def build_erg_time_opt_solver(init_sol, args):
         # return np.array(0.)
 
 
-    solver = AugmentedLagrangeSolver(
+    solver = ConstrainedAdamSolver(
                     init_sol,
                     loss, 
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=1e-4,
-                    c=0.6)
+                    step_size=1e-3,
+                    c=1.)
     return solver
