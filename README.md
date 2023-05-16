@@ -4,22 +4,21 @@
 
 <p align="justify">
 Code for <a href="">Time-Optimal Ergodic Search</a>. Dayi Dong, Henry Berger, and Ian Abraham. In Robotics Science and Systems (RSS), 2023.
+Multimedia videos found in 
 </p>
 
 <p align="center">
-    <img src="./figures/figure1/git_banner.png" alt="drawing" width="700"/>
+    <img src="./figures/figure1/git_banner.png" alt="drawing" width="800"/>
 </p>
 
 
 ## Citation
 
-If you find this work useful for your research, please cite our paper:
-
 ```
-@article{fan2023daba,
-    title={Decentralization and Acceleration Enables Large-Scale Bundle Adjustment}, 
-    author={Fan, Taosha and Ortiz, Joseph and Hsiao, Ming and Monge, Maurizio and Dong, Jing and Murphey, Todd and  Mukadam, Mustafa},
-    journal={arXiv:2305.07026},
+@article{dong2023TimeOptErg,
+    title={Time-Optimal Ergodic Search}, 
+    author={Dong, Dayi and Berger, Henry and Abraham, Ian},
+    journal={RSS},
     year={2023},
 }
 ```
