@@ -4,7 +4,7 @@
 
 <p align="justify">
 Code for <a href="">Time-Optimal Ergodic Search</a>. Dayi Dong, Henry Berger, and Ian Abraham. In Robotics Science and Systems (RSS), 2023.
-Multimedia videos found in 
+Additional results and multimedia videos found <a href="https://sites.google.com/view/time-optimal-ergodic-search">here</a>.
 </p>
 
 <p align="center">
