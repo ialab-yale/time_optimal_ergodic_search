@@ -22,8 +22,14 @@ def get_phik(vals, basis):
     phik = phik/basis.hk_list
     return phik
 
-def recon_from_fourier(basis_coef):
-    pass
+def recon_from_fourier(basis_coef, basis, k_list, x_vals, normalize=False):
+    fk_vmap = partial(basis.fk_kvmap, k_list)
+    phi = np.dot(vmap(fk_vmap)(x_vals), basis_coef)
+    if normalize:
+        min_phi = np.min(phi)
+        phi = phi-min_phi+0.1
+        phi = phi/np.sum(phi)
+    return phi
 
 class BasisFunc(object):
     def __init__(self, n_basis, emap=None) -> None:

@@ -18,7 +18,8 @@ from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
 from time_opt_erg_lib.cbf import constr2CBF
 from time_opt_erg_lib.fourier_utils import BasisFunc, get_phik, get_ck
-from time_opt_erg_lib.target_distribution import TargetDistribution
+# from time_opt_erg_lib.target_distribution import TargetDistribution
+from bimodal_distr import TargetDistribution
 from time_opt_erg_lib.cbf_utils import sdf2cbf
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
@@ -28,12 +29,12 @@ import yaml
 import pickle as pkl
 
 def build_erg_time_opt_solver(init_sol, args):
-    basis           = BasisFunc(n_basis=[8,8])
+    basis           = BasisFunc(n_basis=[8])
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = DoubleIntegrator()
+    robot_model     = DoubleIntegrator(dim=1)
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
-    workspace_bnds = [[0.,1.0],[0.,1.0]]
+    workspace_bnds = [[0.,1.0]]
 
     # with open('../config/obs.yml', 'r') as file:
     #     obs_info = yaml.safe_load(file)
@@ -67,8 +68,7 @@ def build_erg_time_opt_solver(init_sol, args):
     def emap(x):
         """ Function that maps states to workspace """
         return np.array([
-            (x[0]-workspace_bnds[0][0])/(workspace_bnds[0][1]-workspace_bnds[0][0]), 
-            (x[1]-workspace_bnds[1][0])/(workspace_bnds[1][1]-workspace_bnds[1][0])])
+            (x[0]-workspace_bnds[0][0])/(workspace_bnds[0][1]-workspace_bnds[0][0])])
             
     def barrier_cost(e):
         """ Barrier function to avoid robot going out of workspace """
@@ -83,7 +83,8 @@ def build_erg_time_opt_solver(init_sol, args):
         dt = tf/N
         e = emap(x)
         """ Traj opt loss function, not the same as erg metric """
-        return np.sum(barrier_cost(e)) + tf
+        # return np.sum(barrier_cost(e)) + tf
+        return tf
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -113,8 +114,9 @@ def build_erg_time_opt_solver(init_sol, args):
         # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
         #            for _cbf_ineq in cbf_constr]
         ck = get_ck(e, basis, tf, dt)
-        _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_box = [(u - 1.).flatten(), (-u-1).flatten()]
+        _erg_ineq = [np.array([np.sqrt(erg_metric(ck, phik)) - args['erg_ub'], -tf])]
+        _ctrl_box = [(u - 1.).flatten(), (-u-1.).flatten()]
+        _wrksp_box = [-e.flatten(), (e-1).flatten()]
         return np.concatenate(_erg_ineq + _ctrl_box)# + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)

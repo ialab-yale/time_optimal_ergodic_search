@@ -1,5 +1,7 @@
 import jax.numpy as np
 
+
+
 class SingleIntegrator(object):
     def __init__(self) -> None:
         self.dt = 0.1
@@ -22,22 +24,24 @@ class SingleIntegrator(object):
         self.dfdt = dfdt
 
 class DoubleIntegrator(object):
-    def __init__(self) -> None:
+    def __init__(self, dim=2) -> None:
         self.dt = 0.1
-        self.n = 2
-        self.m = 2
-        A = np.array([
-            [0., 0., 1.0, 0.],
-            [0., 0., 0.0, 1.],
-            [0., 0., 0.0, 0.],
-            [0., 0., 0.0, 0.]
-        ])
-        B = np.array([
-            [0., 0.],
-            [0., 0.],
-            [1., 0.],
-            [0., 1.]
-        ])
+        self.n = dim
+        self.m = dim
+        A = np.eye(dim*2, dim*2, k=dim)
+        # A = np.array([
+        #     [0., 0., 1.0, 0.],
+        #     [0., 0., 0.0, 1.],
+        #     [0., 0., 0.0, 0.],
+        #     [0., 0., 0.0, 0.]
+        # ])
+        B = np.eye(dim*2, dim, -dim)
+        # B = np.array([
+        #     [0., 0.],
+        #     [0., 0.],
+        #     [1., 0.],
+        #     [0., 1.]
+        # ])
         def dfdt(x, u):
             return A@x + B@u
 
