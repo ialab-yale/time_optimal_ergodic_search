@@ -11,8 +11,10 @@ class TargetDistribution(object):
             *[np.linspace(0,1,num=100)]*self.n
         )
         self._s = np.stack([X.ravel() for X in self.domain]).T
+        _p = vmap(self.p)(self._s)
+        _p = _p/np.mean(_p)
         self.evals = (
-            vmap(self.p)(self._s) , self._s
+            _p , self._s
         )
     
     def plot(self):
@@ -20,7 +22,7 @@ class TargetDistribution(object):
 
     def p(self, x):
         amp = 0.1
-        return (0.8*np.exp(-180 * (x[0]-0.2)**2) + 0.7*np.exp(-400*(x[0]-0.68)**2) + 0.5*np.exp(-280*(x[0]-0.8)**2))/3
+        return 0.8*np.exp(-180 * (x[0]-0.2)**2) + 0.7*np.exp(-400*(x[0]-0.68)**2) + 0.5*np.exp(-280*(x[0]-0.8)**2) + 0.8*np.exp(-700 * (x[0]-0.45)**2)
 
         # return np.sin(x[0]*2*np.pi*5+0.1)*np.exp(-180 * (x[0]-0.2)**2) + 0.7*np.exp(-180*(x[0]-0.68)**2) + 1.0
         # return np.exp(-150.5 * np.sum((x[:2] - 0.2)**2)) \
