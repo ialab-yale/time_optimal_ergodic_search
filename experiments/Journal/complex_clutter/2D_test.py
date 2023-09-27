@@ -20,11 +20,12 @@ if __name__=='__main__':
     wksp_bnds       = np.array([[0.,3.5],[-1.,3.5]])
 
     args = {
+        'N' : 500,
         'x0' : np.array([.1,.0]),
         'xf' : np.array([2., 3.2]),
         'phik' : get_phik(target_distr.evals, basis),
         'wrksp_bnds' : wksp_bnds,
-        'alpha' : 0.2
+        'alpha' : 0.2,
     }
 
     obs_info = pkl.load(open('obs_info.pkl', 'rb'))
@@ -46,7 +47,7 @@ if __name__=='__main__':
         return safe
             
 
-    traj_opt = ErgodicTrajectoryOpt(robot_model, obstacles=obs, basis=basis, time_horizon=200, args=args)
+    traj_opt = ErgodicTrajectoryOpt(robot_model, obstacles=obs, basis=basis, time_horizon=np.array(200), args=args)
 
     X, Y = np.meshgrid(*[np.linspace(wks[0],wks[1]) for wks in args['wrksp_bnds']])
     pnts = np.vstack([X.ravel(), Y.ravel()]).T
