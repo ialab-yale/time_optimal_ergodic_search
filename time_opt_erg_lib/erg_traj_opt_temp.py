@@ -56,16 +56,20 @@ class ErgodicTrajectoryOpt(object):
         # for obs in self.obs: 
         #     self.cbf_consts.append(sdf2cbf(self.robot_model.f, obs.distance))
 
-        self.cbf_consts = []
-        temp = []
-        for obs in self.obs: 
-            if len(temp) == 1:
-                temp.append(obs)
-                self.cbf_consts.append(sdf2cbfhole(self.robot_model.f, temp[0].distance, temp[1].distance))
-                temp = []
+        self.cbf_consts_out = []
+        self.cbf_consts_in = []
+        for i in range(len(self.obs)):
+            if i%2 == 0:
+                self.cbf_consts_out.append(sdf2cbf(self.robot_model.f, self.obs[i].distance))
             else:
-                temp.append(obs)
-        print(len(self.cbf_consts))
+                self.cbf_consts_in.append(sdf2cbf(self.robot_model.f, self.obs[i].distance))
+        # for obs in self.obs: 
+        #     if len(temp) == 1:
+        #         temp.append(obs)
+        #         self.cbf_consts.append(sdf2cbfhole(self.robot_model.f, temp[0].distance, temp[1].distance))
+        #         temp = []
+        #     else:
+        #         temp.append(obs)
 
         def _emap(x, args):
             """ Function that maps states to workspace """
@@ -106,7 +110,13 @@ class ErgodicTrajectoryOpt(object):
             x, u = z[:, :n], z[:, n:]
             # p = x[:,:2] # extract just the position component of the trajectory
             # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-            obs_val = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() for _cbf_ineq in self.cbf_consts]
+            # obs_val = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() for _cbf_ineq in self.cbf_consts]
+            obs_val = []
+            for i in range(len(self.cbf_consts_out)):
+                outs = vmap(self.cbf_consts_out[i], in_axes=(0,0,None))(x, u, args['alpha']).flatten()
+                ins = vmap(self.cbf_consts_in[i], in_axes=(0,0,None))(x, u, args['alpha']).flatten()
+                comb = list(map(max, zip(outs, -1*ins)))
+                obs_val.append(comb)
 
             ctrl_box = [(np.abs(u) - 6.).flatten()]
             _ineq_list = ctrl_box + obs_val
@@ -145,7 +155,7 @@ class ErgodicTrajectoryOpt(object):
         x = sol['x'][:,:self.robot_model.n]
         u = sol['x'][:,self.robot_model.n:]
         self.curr_sol = (x, u)
-        return (x, u), ifConv, self.cbf_consts
+        return (x, u), ifConv
 
 # <-- example code for how to use 
 # if __name__=='__main__':

@@ -17,6 +17,9 @@ def dist_func(x):
 def sdf2cbf(f, constr):
     return lambda x, u, alpha: constr(f(x,u)) - (1.-alpha) * constr(x)
 
+def sdf2cbfhole(f, constrout, constrin):
+    return lambda x, u, alpha: np.maximum(constrout(f(x,u)) - (1.-alpha) * constrout(x), -(constrin(f(x,u)) - (1.-alpha) * constrin(x)))
+
 def sdf3cbf(dfdt, constr):
     return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constr(x[:3])
 
