@@ -2,11 +2,11 @@ import numpy as np
 import pickle as pkl
 
 scale = 100.0
-obstacle_x  = np.array([2.84, 2.84])          # obstacle x position of center
-obstacle_y  = np.array([1.82, 1.82])          # obstacle y position of center
-rot         = -np.array([0.00])*np.pi/180.0          # obstacle angle in degrees
-obstacle_l  = np.array([19.8, 9.9])/scale    # obstacle length in meters
-obstacle_w  = np.array([10.1, 5.0])/scale    # obstacle width in meters
+obstacle_x  = np.array([0.5, 0.5])          # obstacle x position of center
+obstacle_y  = np.array([0.5, 0.5])          # obstacle y position of center
+rot         = -np.array([0.00, 0.00])*np.pi/180.0          # obstacle angle in degrees
+obstacle_l  = np.array([50., 25.0])/scale    # obstacle length in meters
+obstacle_w  = np.array([20., 10.0])/scale    # obstacle width in meters
 
 obs_info = {
     # 'obs 1': {'pos' : [2.84, 1.82], 'width/2': 0.01*19.8/2.0}

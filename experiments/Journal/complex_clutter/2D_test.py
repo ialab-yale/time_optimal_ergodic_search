@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../../../')
 import numpy as np
+from jax import vmap
 
 from time_opt_erg_lib.dynamics import SingleIntegrator
 from time_opt_erg_lib.target_distribution import TargetDistribution
@@ -17,12 +18,12 @@ if __name__=='__main__':
     robot_model     = SingleIntegrator()
     target_distr    = TargetDistribution()
     basis           = BasisFunc(n_basis=[8,8])
-    wksp_bnds       = np.array([[0.,3.5],[-1.,3.5]])
+    wksp_bnds       = np.array([[0.,1.],[0.,1.]])
 
     args = {
         'N' : 500,
-        'x0' : np.array([.1,.0]),
-        'xf' : np.array([2., 3.2]),
+        'x0' : np.array([.1,.1]),
+        'xf' : np.array([.9, .9]),
         'phik' : get_phik(target_distr.evals, basis),
         'wrksp_bnds' : wksp_bnds,
         'alpha' : 0.2,
@@ -64,23 +65,52 @@ if __name__=='__main__':
     max_N    = 10
     succ_cnt = 0
     min_dist = 0.5
-    while succ_cnt < max_N:
-        x0 = np.random.uniform(wksp_bnds[:,0], wksp_bnds[:,1]) 
-        if isSafe(x0, obs):
-            dist = 0.
-            while dist < min_dist:
-                xf = np.random.uniform(wksp_bnds[:,0], wksp_bnds[:,1])
-                if isSafe(xf, obs):
-                    dist = np.linalg.norm(x0-xf)
+    # while succ_cnt < max_N:
+    x0 = np.random.uniform(wksp_bnds[:,0], wksp_bnds[:,1]) 
+    print_sdf = True
+    if isSafe(x0, obs):
+        dist = 0.
+        while dist < min_dist:
+            xf = np.random.uniform(wksp_bnds[:,0], wksp_bnds[:,1])
+            if isSafe(xf, obs):
+                dist = np.linalg.norm(x0-xf)
 
-            print('found candidate pair')
-            print(x0, xf)
-            args.update({'x0' : x0})
-            args.update({'xf' : xf})
-            print('solving traj')
-            (x, u), ifConv = traj_opt.get_trajectory(args=args)
-            if ifConv:
-                print('solver converged')
+        print('found candidate pair')
+        print(x0, xf)
+        args.update({'x0' : x0})
+        args.update({'xf' : xf})
+        print('solving traj')
+        (x, u), ifConv, cbf_consts = traj_opt.get_trajectory(args=args)
+        if print_sdf:
+            X, Y = np.meshgrid(*[np.linspace(wks[0],wks[1]) for wks in args['wrksp_bnds']])
+            pnts = np.vstack([X.ravel(), Y.ravel()]).T
+            # print(cbf_consts[0])
+            tu = np.zeros((2500, 2))
+            ta = np.ones((2500, 2)) * args['alpha']
+            print(pnts.shape)
+            print(tu.shape)
+            print(ta.shape)
+            print(X.shape)
+            sdf = vmap(cbf_consts[0])(pnts, tu, ta).T[1].reshape(X.shape)
+            print(sdf.shape)
+            # plt.contour(X, Y, sdf)
+            plt.imshow(sdf)
+
+            plt.contour(X*50, Y*50, _mixed_vals, levels=[-0.01,0.,0.01], linewidths=2, colors='k')
+
+            plt.colorbar()
+            plt.show()
+        if ifConv:
+            print('solver converged')
+
+            if print_sdf:
+                X, Y = np.meshgrid(*[np.linspace(wks[0],wks[1]) for wks in args['wrksp_bnds']])
+                pnts = np.vstack([X.ravel(), Y.ravel()]).T
+                sdf = (vmap(cbf_consts[0])(x, u, args['alpha']).T).reshape(X.shape)
+                plt.contour(X, Y, sdf)
+                plt.colorbar()
+                plt.show()
+            else:
                 plt.contour(X, Y, _mixed_vals, levels=[-0.01,0.,0.01], linewidths=2, colors='k')
                 plt.plot(x[:,0], x[:,1], linestyle='dashdot')#, c='m', alpha=alpha)
 
@@ -88,5 +118,5 @@ if __name__=='__main__':
                 plt.axis('equal')
 
                 plt.show()
-                succ_cnt += 1
+                # succ_cnt += 1
         # TODO need to add in data saving here 
