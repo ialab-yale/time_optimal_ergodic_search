@@ -10,7 +10,7 @@ def rot(th):
     )
 
 class Obstacle(object): 
-    def __init__(self, pos, half_dims, th, buff=0.1, p=4):
+    def __init__(self, pos, half_dims, th, obs_dict, buff=0.1, p=4):
         self.pos = pos
         self.half_dims = half_dims
         self.dims = 2*self.half_dims
@@ -19,6 +19,7 @@ class Obstacle(object):
         self.rot = rot(self.th)
         self.rotT = self.rot.T
         self.inv_rot = lambda p: self.rotT@(self.pos - p)
+        self._obs_dict = obs_dict
         # self.min_dist = min_dist
         self.p = p
     

@@ -32,10 +32,16 @@ if __name__=='__main__':
     obs_info = pkl.load(open('obs_info.pkl', 'rb'))
     obs = []
     for obs_name in obs_info:
+        _ob_inf = {
+            'pos' : np.array(obs_info[obs_name]['pos']), 
+            'half_dims' : np.array(obs_info[obs_name]['half_dims']),
+            'rot': obs_info[obs_name]['rot']*180./-np.pi
+        }
         _ob = Obstacle(
             pos=np.array(obs_info[obs_name]['pos']), 
             half_dims=np.array(obs_info[obs_name]['half_dims']),
-            th=obs_info[obs_name]['rot']
+            th=obs_info[obs_name]['rot'], 
+            obs_dict=_ob_inf
         )
         obs.append(_ob)
     

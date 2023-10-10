@@ -35,7 +35,9 @@ class EnvViz(object):
             _ob_marker.color.r = rgb[0]
             _ob_marker.color.g = rgb[1]
             _ob_marker.color.b = rgb[2]
-            _ob_marker.type = Marker.SPHERE
+            _ob_marker.type = Marker.CUBE
+            # _ob_marker.type = 10
+            # _ob_marker.mesh_resource = "portal.stl"
             # _ob_marker.lifetime = 0 #<-- forever?
             self._env_msg.markers.append(_ob_marker)
 

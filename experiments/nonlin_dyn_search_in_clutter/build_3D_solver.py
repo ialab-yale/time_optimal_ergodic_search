@@ -72,7 +72,8 @@ def build_erg_time_opt_solver():
             'half_dims' : onp.array(_rad),
             'rot': 0.
         }
-        _ob = Obstacle(_ob_inf, p=2)
+        # _ob = Obstacle(_ob_inf, p=2)
+        _ob = Obstacle(onp.array(_pos), onp.array(_rad), -np.pi*0./180., _ob_inf, p=2)
             # pos=np.array(obs_info[obs_name]['pos']), 
             # half_dims=np.array(obs_info[obs_name]['half_dims']),
             # th=obs_info[obs_name]['rot']
