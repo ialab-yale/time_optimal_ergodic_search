@@ -23,6 +23,9 @@ def sdf2cbfhole(f, constrout, constrin):
 def sdf3cbf(dfdt, constr):
     return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constr(x[:3])
 
+def sdf3cbfhole(dfdt, constrout, constrin):
+    return lambda x, u, alpha, dt : np.maximum(constrout((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constrout(x[:3]), -(constrin((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constrin(x[:3])))
+
 # # Regular Inequality Constraints
 # def sdf2cbf(f, constr):
 #     return lambda x, u, alpha: constr(x)

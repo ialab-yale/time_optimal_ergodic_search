@@ -1,5 +1,5 @@
 import sys 
-sys.path.append('../..')
+sys.path.append('../../..')
 
 import jax
 from functools import partial
@@ -19,7 +19,7 @@ from time_opt_erg_lib.obstacle import Obstacle
 from time_opt_erg_lib.cbf import constr2CBF
 from time_opt_erg_lib.fourier_utils import BasisFunc, get_phik, get_ck
 from time_opt_erg_lib.target_distribution import TargetDistribution
-from time_opt_erg_lib.cbf_utils import sdf3cbf
+from time_opt_erg_lib.cbf_utils import sdf3cbfhole
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
 
@@ -58,27 +58,52 @@ def build_erg_time_opt_solver():
     }
     _key = jnp_random.PRNGKey(0)
 
-    _N_obs = 20
+    _N_obs = 5
     obs = []
     cbf_constr = []
+
     for i in range(_N_obs):
         _key, _subkey = jnp_random.split(_key)
-        _pos = jnp_random.uniform(_subkey, shape=(3,), 
-                        minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
-        _key, _subkey = jnp_random.split(_key)
-        _rad = jnp_random.uniform(_subkey, shape=(3,), minval=0.5, maxval=.75) 
-        _ob_inf = {
-            'pos' : onp.array(_pos), 
-            'half_dims' : onp.array(_rad),
-            'rot': 0.
+        _pos = jnp_random.uniform(_subkey, shape=(3,), minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
+        _radout = onp.array([0.5, 0.25, 0.5])
+        _radin = onp.array([0.25, 0.25, 0.25])
+        _rot = 0.
+
+        _ob_inf_out = {
+            'pos' : _pos, 
+            'half_dims' : _radout,
+            'rot': _rot
         }
-        _ob = Obstacle(_ob_inf, p=2)
-        # _ob = Obstacle(onp.array(_pos), onp.array(_rad), -np.pi*0./180., _ob_inf, p=2)
-            # pos=np.array(obs_info[obs_name]['pos']), 
-            # half_dims=np.array(obs_info[obs_name]['half_dims']),
-            # th=obs_info[obs_name]['rot']
-        obs.append(_ob)
-        cbf_constr.append(sdf3cbf(robot_model.dfdt, _ob.distance3))
+        _ob_inf_in = {
+            'pos' : _pos, 
+            'half_dims' : _radin,
+            'rot': _rot
+        }
+        _ob_out = Obstacle(_ob_inf_out)
+        _ob_in = Obstacle(_ob_inf_in)
+        obs.append(_ob_out)
+        cbf_constr.append(sdf3cbfhole(robot_model.dfdt, _ob_out.distance3, _ob_in.distance3))
+
+    # for i in range(_N_obs):
+    #     _key, _subkey = jnp_random.split(_key)
+    #     _pos = jnp_random.uniform(_subkey, shape=(3,), 
+    #                     minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
+    #     _key, _subkey = jnp_random.split(_key)
+    #     _rad = jnp_random.uniform(_subkey, shape=(3,), minval=0.5, maxval=.75) 
+    #     _ob_inf = {
+    #         'pos' : onp.array(_pos), 
+    #         'half_dims' : onp.array(_rad),
+    #         'rot': 0.
+    #     }
+    #     # _ob = Obstacle(_ob_inf, p=2)
+    #     print(type(onp.array(_pos)))
+    #     print(type(_rad))
+    #     _ob = Obstacle(onp.array(_pos), onp.array(_rad), -np.pi*0./180., _ob_inf, p=2)
+    #         # pos=np.array(obs_info[obs_name]['pos']), 
+    #         # half_dims=np.array(obs_info[obs_name]['half_dims']),
+    #         # th=obs_info[obs_name]['rot']
+    #     obs.append(_ob)
+    #     cbf_constr.append(sdf3cbf(robot_model.dfdt, _ob.distance3))
 
 
     args.update({
