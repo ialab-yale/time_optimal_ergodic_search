@@ -40,6 +40,9 @@ class EnvViz(object):
             _ob_marker.type = Marker.MESH_RESOURCE
             _ob_marker.mesh_resource = "package://time_optimal_ergodic_search/experiments/Journal/complex_clutter/holeblock.stl"
             # _ob_marker.lifetime = 0 #<-- forever?
+            # _ob_marker.scale.x = 2
+            # _ob_marker.scale.y = 2
+            # _ob_marker.scale.z = 2
             self._env_msg.markers.append(_ob_marker)
 
         self._msg_pub.publish(self._env_msg)

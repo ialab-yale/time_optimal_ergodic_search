@@ -58,7 +58,7 @@ def build_erg_time_opt_solver():
     }
     _key = jnp_random.PRNGKey(0)
 
-    _N_obs = 5
+    _N_obs = 1
     obs = []
     cbf_constr = []
 
