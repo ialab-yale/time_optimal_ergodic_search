@@ -61,7 +61,7 @@ def build_erg_time_opt_solver():
     obs = []
 
     _tor_info = {
-        'pos' : onp.array([2.5, 5., 0.5]), 
+        'pos' : onp.array([2.5, 5., .5]), 
         'r1'  : 2.,
         'r2'  : 0.5,
         'rot': 0.
@@ -153,7 +153,7 @@ def build_erg_time_opt_solver():
         # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
         #             for _cbf_ineq in cbf_constr]
         _sdf_ineq = [-vmap(t.distance)(x[:,:3]) for t in obs]
-        # deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>=0))
+        deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>0))
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
