@@ -29,9 +29,9 @@ class EnvViz(object):
             _ob_marker.pose.orientation.y = _quat[1]
             _ob_marker.pose.orientation.z = _quat[2]
             _ob_marker.pose.orientation.w = _quat[3]
-            _ob_marker.scale.x = 1.
-            _ob_marker.scale.y = 1.
-            _ob_marker.scale.z = 1.
+            _ob_marker.scale.x = ob['r2']/0.5
+            _ob_marker.scale.y = ob['r2']/0.5
+            _ob_marker.scale.z = ob['r2']/0.5
             _ob_marker.color.a = 1.0
             rgb = np.random.uniform(0,1, size=(3,))
             _ob_marker.color.r = rgb[0]

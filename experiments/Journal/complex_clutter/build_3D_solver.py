@@ -62,8 +62,8 @@ def build_erg_time_opt_solver():
 
     _tor_info = {
         'pos' : onp.array([2.5, 5., .5]), 
-        'r1'  : 2.,
-        'r2'  : 0.5,
+        'r1'  : 1.,
+        'r2'  : 0.25,
         'rot': 0.
     }
 
