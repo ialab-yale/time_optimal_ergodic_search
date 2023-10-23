@@ -24,25 +24,23 @@ class EnvViz(object):
             _ob_marker.pose.position.x = ob['pos'][0]
             _ob_marker.pose.position.y = ob['pos'][1]
             _ob_marker.pose.position.z = ob['pos'][2]
-            _quat = trans.quaternion_about_axis(ob['rot'], (0,0,1))
+            _quat = trans.quaternion_about_axis(ob['rot'], (0,1,0))
             _ob_marker.pose.orientation.x = _quat[0]
             _ob_marker.pose.orientation.y = _quat[1]
             _ob_marker.pose.orientation.z = _quat[2]
             _ob_marker.pose.orientation.w = _quat[3]
-            _ob_marker.scale.x = ob['half_dims'][0]*2
-            _ob_marker.scale.y = ob['half_dims'][1]*2
-            _ob_marker.scale.z = ob['half_dims'][2]*2
+            _ob_marker.scale.x = 1.
+            _ob_marker.scale.y = 1.
+            _ob_marker.scale.z = 1.
             _ob_marker.color.a = 1.0
             rgb = np.random.uniform(0,1, size=(3,))
             _ob_marker.color.r = rgb[0]
             _ob_marker.color.g = rgb[1]
             _ob_marker.color.b = rgb[2]
+            # _ob_marker.type = Marker.SPHERE
             _ob_marker.type = Marker.MESH_RESOURCE
-            _ob_marker.mesh_resource = "package://time_optimal_ergodic_search/experiments/Journal/complex_clutter/holeblock.stl"
+            _ob_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/torus.stl"
             # _ob_marker.lifetime = 0 #<-- forever?
-            # _ob_marker.scale.x = 2
-            # _ob_marker.scale.y = 2
-            # _ob_marker.scale.z = 2
             self._env_msg.markers.append(_ob_marker)
 
         self._msg_pub.publish(self._env_msg)

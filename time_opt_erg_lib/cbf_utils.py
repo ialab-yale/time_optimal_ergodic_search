@@ -26,8 +26,8 @@ def sdf3cbf(dfdt, constr):
 def sdf3cbfhole(dfdt, constrout, constrin):
     return lambda x, u, alpha, dt : np.maximum(constrout((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constrout(x[:3]), -(constrin((x + dt * dfdt(x,u))[:3]) - (1.-alpha) * constrin(x[:3])))
 
-# def sdf2torus(dfdt, rout, rin):
-#     return lambda x, u, alpha, dt : 
+# def sdf2torus(dfdt, constr, r2):
+#     return lambda x, u, alpha, dt : np.linalg.norm(np.array([constr(x), x[1]])) - r2
 
 # # Regular Inequality Constraints
 # def sdf2cbf(f, constr):

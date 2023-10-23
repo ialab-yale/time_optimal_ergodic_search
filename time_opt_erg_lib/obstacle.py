@@ -54,6 +54,36 @@ class Obstacle(object):
         # return 1 - (dx**self.p + dy**self.p)
 
 
+class Torus(object): 
+
+    def __init__(self, obs_dict, buff=0.1, p=4):
+        self._obs_dict = obs_dict
+        self.pos = np.array(obs_dict['pos'])
+        self.r1 = np.array(obs_dict['r1'])
+        self.r2 = np.array(obs_dict['r2'])
+        self.buff = buff
+        self.th = -np.pi*obs_dict['rot']/180.
+        self.rot = rot(self.th)
+        self.rotT = self.rot.T
+        self.inv_rot = lambda p: self.rotT@(self.pos - p)
+        # self.min_dist = min_dist
+        self.p = p
+    
+    def __getitem__(self, key):
+        return self._obs_dict[key]
+
+    def distancexz(self, x):
+        x = x - self.pos
+        # return np.linalg.norm(np.array([x[0]], x[2])) - self.r1
+        return np.linalg.norm(np.array([x[0], x[2]])) - self.r1
+    
+    def distance(self, x):
+        return np.linalg.norm(np.array([self.distancexz(x), x[1]])) - self.r2
+    
+    def distance_sphere(self, x):
+        return np.linalg.norm(x - self.pos) - self.r1
+
+
 if __name__=='__main__':
     import matplotlib.pyplot as plt
     X, Y = np.meshgrid(*[np.linspace(-2,2)]*2)

@@ -8,6 +8,7 @@ from jax.lax import scan
 # from jax.ops import index_update, index
 import jax.random as jnp_random
 import jax.numpy as np
+import jax.debug as deb
 
 from jax.flatten_util import ravel_pytree
 
@@ -15,7 +16,7 @@ import numpy as onp
 from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator, ThreeDAirCraftModel
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
-from time_opt_erg_lib.obstacle import Obstacle
+from time_opt_erg_lib.obstacle import Obstacle, Torus
 from time_opt_erg_lib.cbf import constr2CBF
 from time_opt_erg_lib.fourier_utils import BasisFunc, get_phik, get_ck
 from time_opt_erg_lib.target_distribution import TargetDistribution
@@ -56,33 +57,19 @@ def build_erg_time_opt_solver():
         'alpha' : 0.2,
         'wrksp_bnds' : np.array([[0.,5],[0.,10],[0.,5.]])
     }
-    _key = jnp_random.PRNGKey(0)
 
-    _N_obs = 1
     obs = []
-    cbf_constr = []
 
-    for i in range(_N_obs):
-        _key, _subkey = jnp_random.split(_key)
-        _pos = jnp_random.uniform(_subkey, shape=(3,), minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
-        _radout = onp.array([0.5, 0.25, 0.5])
-        _radin = onp.array([0.25, 0.25, 0.25])
-        _rot = 0.
+    _tor_info = {
+        'pos' : onp.array([2.5, 5., 0.5]), 
+        'r1'  : 2.,
+        'r2'  : 0.5,
+        'rot': 0.
+    }
 
-        _ob_inf_out = {
-            'pos' : _pos, 
-            'half_dims' : _radout,
-            'rot': _rot
-        }
-        _ob_inf_in = {
-            'pos' : _pos, 
-            'half_dims' : _radin,
-            'rot': _rot
-        }
-        _ob_out = Obstacle(_ob_inf_out)
-        _ob_in = Obstacle(_ob_inf_in)
-        obs.append(_ob_out)
-        cbf_constr.append(sdf3cbfhole(robot_model.dfdt, _ob_out.distance3, _ob_in.distance3))
+    _tor = Torus(_tor_info)
+    obs.append(_tor)
+    # sdf_constr.append(_tor)
 
     # for i in range(_N_obs):
     #     _key, _subkey = jnp_random.split(_key)
@@ -163,12 +150,15 @@ def build_erg_time_opt_solver():
         N = args['N']
         dt = tf/N
         e = emap(x)
-        _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
-                    for _cbf_ineq in cbf_constr]
+        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+        #             for _cbf_ineq in cbf_constr]
+        _sdf_ineq = [-vmap(t.distance)(x[:,:3]) for t in obs]
+        # deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>=0))
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
+        return np.concatenate(_erg_ineq + _ctrl_box + _sdf_ineq)
+        # return np.concatenate(_erg_ineq + _ctrl_box )
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
