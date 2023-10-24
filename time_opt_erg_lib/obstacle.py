@@ -75,11 +75,11 @@ class Torus(object):
     def distancexz(self, x):
         # x = x - self.pos
         # return np.linalg.norm(np.array([x[0]], x[2])) - self.r1
-        return np.linalg.norm(np.array([x[0], x[2]])) - self.r1
+        return np.linalg.norm(np.array([x[0], x[2]]), ord=4) - self.r1
     
     def distance(self, x):
         x = x - self.pos
-        return np.linalg.norm(np.array([self.distancexz(x), x[1]])) - self.r2
+        return np.linalg.norm(np.array([self.distancexz(x), x[1]]), ord=4) - self.r2
     
     def distance_sphere(self, x):
         return np.linalg.norm(x - self.pos) - self.r1

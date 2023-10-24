@@ -51,8 +51,8 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 500, 
-        'x0' : np.array([2.5, 0.1, 2.5, 0., np.pi/2]),
-        'xf' : np.array([2.5, 9.0, 2.5, 0., np.pi/2]),
+        'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),
+        'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),
         'erg_ub' : 0.0005,
         'alpha' : 0.2,
         'wrksp_bnds' : np.array([[0.,5],[0.,10],[0.,5.]])
@@ -60,15 +60,87 @@ def build_erg_time_opt_solver():
 
     obs = []
 
-    _tor_info = {
+    _tor_info1 = {
         'pos' : onp.array([2.5, 5., .5]), 
         'r1'  : 1.,
         'r2'  : 0.25,
         'rot': 0.
     }
 
-    _tor = Torus(_tor_info)
-    obs.append(_tor)
+    _tor_info2 = {
+        'pos' : onp.array([2., 7., 1.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info3 = {
+        'pos' : onp.array([2., 2., 1.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info4 = {
+        'pos' : onp.array([6., 7., 1.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info5 = {
+        'pos' : onp.array([6., 2., 1.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info6 = {
+        'pos' : onp.array([2., 7., 4.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info7 = {
+        'pos' : onp.array([2., 2., 4.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info8 = {
+        'pos' : onp.array([6., 7., 4.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor_info9 = {
+        'pos' : onp.array([6., 2., 4.]), 
+        'r1'  : 1.,
+        'r2'  : 0.25,
+        'rot': 0.
+    }
+
+    _tor1 = Torus(_tor_info1)
+    _tor2 = Torus(_tor_info2)
+    _tor3 = Torus(_tor_info3)
+    _tor4 = Torus(_tor_info4)
+    _tor5 = Torus(_tor_info5)
+    _tor6 = Torus(_tor_info6)
+    _tor7 = Torus(_tor_info7)
+    _tor8 = Torus(_tor_info8)
+    _tor9 = Torus(_tor_info9)
+    obs.append(_tor1)
+    obs.append(_tor2)
+    obs.append(_tor3)
+    obs.append(_tor4)
+    obs.append(_tor5)
+    obs.append(_tor6)
+    obs.append(_tor7)
+    obs.append(_tor8)
+    obs.append(_tor9)
     # sdf_constr.append(_tor)
 
     # for i in range(_N_obs):
