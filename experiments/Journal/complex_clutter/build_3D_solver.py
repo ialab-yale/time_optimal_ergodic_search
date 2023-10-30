@@ -45,18 +45,18 @@ class TargetDistribution(object):
 def build_erg_time_opt_solver():
     basis           = BasisFunc(n_basis=[8,8,8])
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = ThreeDAirCraftModel()
-    # robot_model     = NDDoubleIntegrator(ndim=3)
+    # robot_model     = ThreeDAirCraftModel()
+    robot_model     = DoubleIntegrator(dim=3)
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 
     args = {
         'N' : 500, 
-        'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),
-        'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),
-        # 'x0' : np.array([1., 0.1, 2.5]),
-        # 'xf' : np.array([8., 9.0, 2.5]),
-        'erg_ub' : 0.000001,
+        # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),
+        # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),
+        'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),
+        'xf' : np.array([8., 9.0, 2.5, 0., 0., 0.]),
+        'erg_ub' : 0.00000001,
         'alpha' : 0.2,
         'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,10.]])
     }
