@@ -13,14 +13,14 @@ import jax.debug as deb
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator, ThreeDAirCraftModel
+from time_opt_erg_lib.dynamics import DoubleIntegrator, NDDoubleIntegrator, SingleIntegrator, ThreeDAirCraftModel
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle, Torus
 from time_opt_erg_lib.cbf import constr2CBF
 from time_opt_erg_lib.fourier_utils import BasisFunc, get_phik, get_ck
 from time_opt_erg_lib.target_distribution import TargetDistribution
-from time_opt_erg_lib.cbf_utils import sdf3cbfhole
+from time_opt_erg_lib.cbf_utils import sdf3cbfhole, sdf3cbf
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
 
@@ -46,6 +46,7 @@ def build_erg_time_opt_solver():
     basis           = BasisFunc(n_basis=[8,8,8])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = ThreeDAirCraftModel()
+    # robot_model     = NDDoubleIntegrator(ndim=3)
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 
@@ -53,116 +54,20 @@ def build_erg_time_opt_solver():
         'N' : 500, 
         'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),
         'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),
-        'erg_ub' : 0.0005,
+        # 'x0' : np.array([1., 0.1, 2.5]),
+        # 'xf' : np.array([8., 9.0, 2.5]),
+        'erg_ub' : 0.000001,
         'alpha' : 0.2,
-        'wrksp_bnds' : np.array([[0.,5],[0.,10],[0.,5.]])
+        'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,10.]])
     }
 
     obs = []
-
-    _tor_info1 = {
-        'pos' : onp.array([2.5, 5., .5]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info2 = {
-        'pos' : onp.array([2., 7., 1.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info3 = {
-        'pos' : onp.array([2., 2., 1.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info4 = {
-        'pos' : onp.array([6., 7., 1.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info5 = {
-        'pos' : onp.array([6., 2., 1.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info6 = {
-        'pos' : onp.array([2., 7., 4.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info7 = {
-        'pos' : onp.array([2., 2., 4.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info8 = {
-        'pos' : onp.array([6., 7., 4.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor_info9 = {
-        'pos' : onp.array([6., 2., 4.]), 
-        'r1'  : 1.,
-        'r2'  : 0.25,
-        'rot': 0.
-    }
-
-    _tor1 = Torus(_tor_info1)
-    _tor2 = Torus(_tor_info2)
-    _tor3 = Torus(_tor_info3)
-    _tor4 = Torus(_tor_info4)
-    _tor5 = Torus(_tor_info5)
-    _tor6 = Torus(_tor_info6)
-    _tor7 = Torus(_tor_info7)
-    _tor8 = Torus(_tor_info8)
-    _tor9 = Torus(_tor_info9)
-    obs.append(_tor1)
-    obs.append(_tor2)
-    obs.append(_tor3)
-    obs.append(_tor4)
-    obs.append(_tor5)
-    obs.append(_tor6)
-    obs.append(_tor7)
-    obs.append(_tor8)
-    obs.append(_tor9)
-    # sdf_constr.append(_tor)
-
-    # for i in range(_N_obs):
-    #     _key, _subkey = jnp_random.split(_key)
-    #     _pos = jnp_random.uniform(_subkey, shape=(3,), 
-    #                     minval=np.array([0.,0.,0.]), maxval=np.array([5.,10.,5.]))
-    #     _key, _subkey = jnp_random.split(_key)
-    #     _rad = jnp_random.uniform(_subkey, shape=(3,), minval=0.5, maxval=.75) 
-    #     _ob_inf = {
-    #         'pos' : onp.array(_pos), 
-    #         'half_dims' : onp.array(_rad),
-    #         'rot': 0.
-    #     }
-    #     # _ob = Obstacle(_ob_inf, p=2)
-    #     print(type(onp.array(_pos)))
-    #     print(type(_rad))
-    #     _ob = Obstacle(onp.array(_pos), onp.array(_rad), -np.pi*0./180., _ob_inf, p=2)
-    #         # pos=np.array(obs_info[obs_name]['pos']), 
-    #         # half_dims=np.array(obs_info[obs_name]['half_dims']),
-    #         # th=obs_info[obs_name]['rot']
-    #     obs.append(_ob)
-    #     cbf_constr.append(sdf3cbf(robot_model.dfdt, _ob.distance3))
+    cbf_constr = []
+    a = onp.load('obs.npy', allow_pickle=True)
+    for ele in a:
+        t = Torus(ele)
+        obs.append(t)
+        cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
 
 
     args.update({
@@ -222,14 +127,14 @@ def build_erg_time_opt_solver():
         N = args['N']
         dt = tf/N
         e = emap(x)
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
-        #             for _cbf_ineq in cbf_constr]
-        _sdf_ineq = [-vmap(t.distance)(x[:,:3]) for t in obs]
-        deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>0))
+        _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+                    for _cbf_ineq in cbf_constr]
+        # _sdf_ineq = 10*[-vmap(t.distance)(x[:,:3]) for t in obs]
+        # deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>0))
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box + _sdf_ineq)
+        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _ctrl_box )
 
 

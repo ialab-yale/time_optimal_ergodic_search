@@ -38,6 +38,7 @@ def getMeshMarker(id, pnt):
     _model_marker.pose.orientation.z = _q[2]
     _model_marker.pose.orientation.w = _q[3]
 
+    # _model_marker.type = Marker.SPHERE
     _model_marker.type = Marker.MESH_RESOURCE
     _model_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/DeHavillandVampire.stl"
     return _model_marker

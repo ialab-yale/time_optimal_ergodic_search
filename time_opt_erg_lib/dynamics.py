@@ -55,6 +55,16 @@ class DoubleIntegrator(object):
         self.f = f
         self.dfdt = dfdt
 
+class NDDoubleIntegrator(object):
+    def __init__(self,ndim) -> None:
+        self.dt = 0.1
+        self.n = ndim
+        self.m = ndim
+
+        def dfdt(x, u):
+            return np.concatenate((x[ndim:],u),axis=-1)
+        self.dfdt = dfdt
+
 class KinematicBicycle(object):
     def __init__(self) -> None:
         self.dt = 0.1
