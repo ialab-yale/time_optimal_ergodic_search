@@ -56,8 +56,8 @@ def build_erg_time_opt_solver():
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),
         'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),
         'xf' : np.array([8., 9.0, 2.5, 0., 0., 0.]),
-        'erg_ub' : 0.00000001,
-        'alpha' : 0.2,
+        'erg_ub' : 0.000000000001,
+        'alpha' : 1.,
         'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,10.]])
     }
 
