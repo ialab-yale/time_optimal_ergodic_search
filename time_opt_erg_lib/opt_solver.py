@@ -32,7 +32,7 @@ class AugmentedLagrangeSolver(object):
             mu  = dual_solution['mu']
             _eq_constr   = eq_constr(solution, args)
             _ineq_constr = ineq_constr(solution, args)
-            deb.print("ineq: {a}", a=np.max(_ineq_constr))
+            # deb.print("ineq: {a}", a=np.max(_ineq_constr))
             return loss(solution, args) \
                 + np.sum(lam * _eq_constr + c*0.5 * (_eq_constr)**2) \
                 + (1/c)*0.5 * np.sum(np.maximum(0., mu + c*_ineq_constr)**2 - mu**2)
