@@ -61,13 +61,13 @@ if __name__ =="__main__":
 
     solver = build_erg_time_opt_solver(args, target_distr)
     sol = solver.get_solution()
-    
+
     rate = rospy.Rate(10)
     traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
 
     print('publishing trajectory')
 
-    erg_ubs = [0.1, 0.001]
+    erg_ubs = [0.1, 0.01, 0.001, 0.0001]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
