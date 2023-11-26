@@ -44,6 +44,8 @@ if __name__ =="__main__":
 
 
     solver, obs, args = build_erg_time_opt_solver()
+    print("obs: ",end="")
+    print(obs)
 
     env_viz = EnvViz(obs)
     agent_viz = AgentViz(agent_name)

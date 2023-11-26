@@ -3,14 +3,36 @@ import numpy as onp
 
 
 
+# class SingleIntegrator(object):
+#     def __init__(self) -> None:
+#         self.dt = 0.1
+#         self.n = 2
+#         self.m = 2
+#         B = np.array([
+#             [1.,0.],
+#             [0.,1.]
+#         ])
+#         def dfdt(x, u):
+#             return B@u
+#         def f(x, u):
+#             # B = np.array([
+#             #     [np.cos(x[2]), 0.,],
+#             #     [np.sin(x[2]), 0.],
+#             #     [0., 1.]
+#             # ])
+#             return x + self.dt*B@u
+#         self.f = f
+#         self.dfdt = dfdt
+
 class SingleIntegrator(object):
     def __init__(self) -> None:
         self.dt = 0.1
-        self.n = 2
-        self.m = 2
+        self.n = 3
+        self.m = 3
         B = np.array([
-            [1.,0.],
-            [0.,1.]
+            [1.,0.,0.],
+            [0.,1.,0.],
+            [0.,0.,1.]
         ])
         def dfdt(x, u):
             return B@u

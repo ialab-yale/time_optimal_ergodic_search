@@ -13,7 +13,7 @@ import jax.debug as deb
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, NDDoubleIntegrator, SingleIntegrator, ThreeDAirCraftModel, DroneDynamics
+from time_opt_erg_lib.dynamics import SingleIntegrator, DoubleIntegrator, NDDoubleIntegrator, SingleIntegrator, ThreeDAirCraftModel, DroneDynamics
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle, Torus
@@ -45,9 +45,10 @@ class TargetDistribution(object):
 def build_erg_time_opt_solver():
     basis           = BasisFunc(n_basis=[8,8,8])
     erg_metric      = ErgodicMetric(basis)
+    robot_model     = SingleIntegrator()
     # robot_model     = ThreeDAirCraftModel()
     # robot_model     = DoubleIntegrator(dim=3)
-    robot_model     = DroneDynamics()
+    # robot_model     = DroneDynamics()
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 
@@ -57,11 +58,13 @@ def build_erg_time_opt_solver():
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
         # 'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),    # Pointmass
         # 'xf' : np.array([8., 9.0, 2.5, 0., 0., 0.]),    # Pointmass
-        'x0' : np.concatenate([np.array([1., 0.1, 2.5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
-        'xf' : np.concatenate([np.array([8., 9., 2.5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        'x0' : np.array([1., 0.1, 2.5]),    # SingleInt
+        'xf' : np.array([8., 9.0, 2.5]),    # SingleInt
+        # 'x0' : np.concatenate([np.array([1., 0.1, 2.5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        # 'xf' : np.concatenate([np.array([8., 9., 2.5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
         'erg_ub' : 0.000000000001,
         'alpha' : 1.,
-        'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,10.]])
+        'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,7.]])
     }
 
     obs = []
@@ -139,7 +142,8 @@ def build_erg_time_opt_solver():
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
+        # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
+        return np.concatenate(_erg_ineq + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _ctrl_box )
 
 
