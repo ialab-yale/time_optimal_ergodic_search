@@ -61,6 +61,8 @@ if __name__ =="__main__":
     while not rospy.is_shutdown():
         solver.solve(args=args, max_iter=100, eps=1e-7)
         sol = solver.get_solution()
+        with open('drone/test_trajs/test_traj.pkl', 'wb') as fp:
+            pkl.dump(sol, fp)
         print(sol['tf'])
         # for i, _pt in enumerate(sol['x']):
         #     traj_msg.points[i].x = _pt[0]

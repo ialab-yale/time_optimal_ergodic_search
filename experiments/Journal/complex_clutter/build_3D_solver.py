@@ -141,9 +141,10 @@ def build_erg_time_opt_solver():
         # deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>0))
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
-        return np.concatenate(_erg_ineq + _cbf_ineq)
+        # _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
+        _ctrl_box = [(-u[:,0]+0.2).flatten(), (u[:,0]-6.0).flatten(), (np.abs(u[:,1:]) - np.pi/2).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
+        # return np.concatenate(_erg_ineq + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _ctrl_box )
 
 
