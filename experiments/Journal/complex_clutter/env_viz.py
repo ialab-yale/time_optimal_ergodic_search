@@ -29,9 +29,12 @@ class EnvViz(object):
             _ob_marker.pose.orientation.y = _quat[1]
             _ob_marker.pose.orientation.z = _quat[2]
             _ob_marker.pose.orientation.w = _quat[3]
-            _ob_marker.scale.x = ob['r2']/0.5
-            _ob_marker.scale.y = ob['r2']/0.5
-            _ob_marker.scale.z = ob['r2']/0.5
+            # _ob_marker.scale.x = ob['r2']/0.5
+            # _ob_marker.scale.y = ob['r2']/0.5
+            # _ob_marker.scale.z = ob['r2']/0.5
+            _ob_marker.scale.x = 1.
+            _ob_marker.scale.y = 1.
+            _ob_marker.scale.z = 1.
             _ob_marker.color.a = 1.0
             rgb = np.random.uniform(0,1, size=(3,))
             _ob_marker.color.r = rgb[0]
@@ -39,7 +42,7 @@ class EnvViz(object):
             _ob_marker.color.b = rgb[2]
             # _ob_marker.type = Marker.SPHERE
             _ob_marker.type = Marker.MESH_RESOURCE
-            _ob_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/sqorus.stl"
+            _ob_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/sqorus_physical.stl"
             # _ob_marker.lifetime = 0 #<-- forever?
             self._env_msg.markers.append(_ob_marker)
 

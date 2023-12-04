@@ -155,9 +155,9 @@ class Robot(SyncCrazyflie, Node):
         # self.cf.high_level_commander.land(0.0, 2.0)
         self.cf.commander.send_position_setpoint(self._pose.position.x, self._pose.position.y, 0.0, self._pose.orientation.x)
 
-    def go_to_pos(self, x, y, yaw=0.0):
+    def go_to_pos(self, x, y, z, yaw=0.0):
         # self.cf.high_level_commander.go_to(x, y, 0.4, 0.0, 2.0, relative=False)
-        self.cf.commander.send_position_setpoint(x, y, 0.4, yaw)
+        self.cf.commander.send_position_setpoint(x, y, z, yaw)
 
     def go_to_vel(self, vx, vy, yawrate=0.0):
         self.cf.commander.send_hover_setpoint(vx, vy, yawrate, 0.4) # TODO try send_vel_world_setpoint
@@ -174,7 +174,8 @@ class Robot(SyncCrazyflie, Node):
     #### Read the action to apply to the env from topic 'action'
     def get_action_callback(self, msg):
         self.target_vals = msg.data
-        self.go_to_pos(self.target_vals[0], self.target_vals[1])
+        self.go_to_pos(self.target_vals[0], self.target_vals[1], self.target_vals[2])
+        # time.sleep(0.1)
 
     def get_land_callback(self, msg):
         if msg.data:
@@ -186,7 +187,8 @@ def main(args=None):
     rclpy.init(args=args)
 
     # URI to the Crazyflie to connect to
-    URI = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E700')
+    URI = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E702')
+    # time.sleep(5)
 
     # Initialize the low-level drivers
     cflib.crtp.init_drivers()
@@ -198,6 +200,7 @@ def main(args=None):
         
         # cf_interface.take_off()
         robot.start_config()
+        time.sleep(5)
         rclpy.spin(robot)
         robot.land()
         

@@ -22,13 +22,13 @@ from matplotlib.patches import Rectangle, Circle
 import sys
 # sys.path.append('../')
 
-from utils.fn_point_mass_dynamics import Dynamics
-from utils.mpc import MPC
-from utils.problem_setup import ErgProblem
-import utils.fn_cbf as cbf
+# from utils.fn_point_mass_dynamics import Dynamics
+# from utils.mpc import MPC
+# from utils.problem_setup import ErgProblem
+# import utils.fn_cbf as cbf
 # from gym_pybullet_drones.control.DSLPIDControl import DSLPIDControl
 # from gym_pybullet_drones.utils.enums import DroneModel, Physics
-from utils.fn_aug_lag_opt import Aug_Lagrange_optimizer
+# from utils.fn_aug_lag_opt import Aug_Lagrange_optimizer
 
 
 class Computation(Node):
@@ -46,8 +46,8 @@ class Computation(Node):
         iter = 200000
         a = 0.5
 
-        self.dynam   = Dynamics()
-        self.prob = ErgProblem(self.dynam, self.xf, a)
+        # self.dynam   = Dynamics()
+        # self.prob = ErgProblem(self.dynam, self.xf, a)
         # x0 = 0.001*np.zeros((self.prob.T, self.dynam.n))
         # x0 = np.linspace(self.init_state,self.xf,self.prob.T,endpoint=True)
         # u0 = 0.001*np.zeros((self.prob.T, self.dynam.m))
@@ -68,7 +68,7 @@ class Computation(Node):
 
         # self.files = glob.glob('optimized_trajectories.npy')
 
-        with open('test_trajs/test_traj_0.1_8.pkl', 'rb') as fp:
+        with open('test_trajs/test_traj_fast.pkl', 'rb') as fp:
             self.traj = pickle.load(fp)
         # self.sol = np.load('optimized_trajectory.npy', allow_pickle=False)
 
@@ -118,32 +118,22 @@ class Computation(Node):
 
     
     def action_calculator(self):
-        print(self.x_opt)
         if self.iter < 50:
             self.x_opt = self.sol[0]
 
             target = [float(self.x_opt[0]), 
                     float(self.x_opt[1]), 
-                    float(0.25)]
+                    float(self.x_opt[2])]
 
             msg = Float32MultiArray()
             msg.data = target
             self.publisher_.publish(msg)
-        elif self.iter < 250:
+        elif self.iter < 550:
             self.x_opt = self.sol[self.iter-50]
 
             target = [float(self.x_opt[0]), 
                     float(self.x_opt[1]), 
-                    float(0.25)]
-
-            msg = Float32MultiArray()
-            msg.data = target
-            self.publisher_.publish(msg)
-        elif self.iter < 300:
-            self.x_opt = self.sol[-1]
-            target = [float(self.x_opt[0]), 
-                    float(self.x_opt[1]), 
-                    float(0.25)]
+                    float(self.x_opt[2])]
 
             msg = Float32MultiArray()
             msg.data = target
@@ -157,6 +147,24 @@ class Computation(Node):
             msg = Bool()
             msg.data = True
             self.land_publisher_.publish(msg)
+        # elif self.iter < 300:
+        #     self.x_opt = self.sol[-1]
+        #     target = [float(self.x_opt[0]), 
+        #             float(self.x_opt[1]), 
+        #             float(self.x_opt[2])]
+
+        #     msg = Float32MultiArray()
+        #     msg.data = target
+        #     self.publisher_.publish(msg)
+        # else:
+        #     self.x_opt = self.sol[-1]
+        #     target = [float(self.x_opt[0]), 
+        #             float(self.x_opt[1]), 
+        #             float(0.)]
+
+        #     msg = Bool()
+        #     msg.data = True
+        #     self.land_publisher_.publish(msg)
         
         self.iter += 1
 
