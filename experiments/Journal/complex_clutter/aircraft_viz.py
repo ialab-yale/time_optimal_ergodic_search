@@ -13,7 +13,7 @@ from vis_helpers import getHeader
 
 def getMeshMarker(id, pnt):
     _model_marker = Marker()
-    scale = 0.001
+    scale = 0.0002
     _model_marker.header.frame_id = "world"
     _model_marker.header.stamp = rospy.Time(0)
     _model_marker.ns = "dude"
@@ -33,14 +33,18 @@ def getMeshMarker(id, pnt):
     _q = trans.quaternion_from_euler(-pnt[3], 0., pnt[4]+np.pi/2)
     # _q = trans.quaternion_from_euler(0., 0., 0)
 
-    _model_marker.pose.orientation.x = _q[0]
-    _model_marker.pose.orientation.y = _q[1]
-    _model_marker.pose.orientation.z = _q[2]
-    _model_marker.pose.orientation.w = _q[3]
+    # _model_marker.pose.orientation.x = _q[0]
+    # _model_marker.pose.orientation.y = _q[1]
+    # _model_marker.pose.orientation.z = _q[2]
+    # _model_marker.pose.orientation.w = _q[3]
+    _model_marker.pose.orientation.x = 0.
+    _model_marker.pose.orientation.y = 0.
+    _model_marker.pose.orientation.z = 0.
+    _model_marker.pose.orientation.w = 0.
 
     # _model_marker.type = Marker.SPHERE
     _model_marker.type = Marker.MESH_RESOURCE
-    _model_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/DeHavillandVampire.stl"
+    _model_marker.mesh_resource = "package://time_optimal_ergodic_search/assets/drone.stl"
     return _model_marker
 
 class AgentViz(object):

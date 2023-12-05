@@ -32,12 +32,16 @@ class AugmentedLagrangeSolver(object):
             mu  = dual_solution['mu']
             _eq_constr   = eq_constr(solution, args)
             _ineq_constr = ineq_constr(solution, args)
+            a = np.sum(lam * _eq_constr + c*0.5 * (_eq_constr)**2)
+            b = (1/c)*0.5 * np.sum(np.maximum(0., mu + c*_ineq_constr)**2 - mu**2)
             deb.print("eq: {a}", a=np.max(_eq_constr))
             deb.print("ineq: {a}", a=np.max(_ineq_constr))
+            # deb.print("eq full: {a}", a=a)
+            # deb.print("ineq full: {a}", a=b)
             deb.print("loss: {a}", a=np.max(loss(solution, args)))
             return loss(solution, args) \
-                + np.sum(lam * _eq_constr + c*0.5 * (_eq_constr)**2) \
-                + (1/c)*0.5 * np.sum(np.maximum(0., mu + c*_ineq_constr)**2 - mu**2)
+                + a \
+                + b
 
         val_dldx = jit(value_and_grad(lagrangian))
         _dldlam = jit(grad(lagrangian, argnums=1))

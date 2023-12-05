@@ -54,8 +54,8 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 500, 
-        'alpha': 1.001,
-        'erg_ub' : 0.05,
+        'alpha': 1.00001,
+        'erg_ub' : 0.001,
         # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),   # Airplane
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
         # 'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),    # Pointmass
@@ -69,7 +69,7 @@ def build_erg_time_opt_solver():
         # 'x0' : np.concatenate([np.array([0.2, 0.2, .5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Physical
         # 'xf' : np.concatenate([np.array([3.2, 3.2, .5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Physical
         # 'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,7.]])   # Simulation
-        'wrksp_bnds' : np.array([[0.1,3.4],[0.1,3.4],[0.1,1.4]])    # Physical
+        'wrksp_bnds' : np.array([[0.1,3.4],[0.1,3.4],[0.2,1.4]])    # Physical
     }
 
     obs = []
@@ -111,7 +111,7 @@ def build_erg_time_opt_solver():
         N = args['N']
         dt = tf/N
         e = emap(x)
-        deb.print("e: {a}", a=np.any((e<0)|(e>1)))
+        # deb.print("e: {a}", a=np.any((e<0)|(e>1)))
         """ Traj opt loss function, not the same as erg metric """
         return np.sum(barrier_cost(e)) + tf
 
@@ -148,7 +148,7 @@ def build_erg_time_opt_solver():
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         # _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        _ctrl_box = [(abs(u[:,:])-10.).flatten()]  # For single integrator dynamics
+        _ctrl_box = [(abs(u[:,:])-8.).flatten()]  # For single integrator dynamics
         return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _ctrl_box )
@@ -156,7 +156,7 @@ def build_erg_time_opt_solver():
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
     u = np.zeros((args['N'], robot_model.m))
-    init_sol = {'x': x, 'u' : u, 'tf': np.array(15.0)}
+    init_sol = {'x': x, 'u' : u, 'tf': np.array(22.0)}
     solver = AugmentedLagrangeSolver(
                     init_sol,
                     loss, 
@@ -164,5 +164,5 @@ def build_erg_time_opt_solver():
                     ineq_constr, 
                     args, 
                     step_size=0.001,
-                    c=0.6)
+                    c=1.0)
     return solver, obs, args
