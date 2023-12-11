@@ -54,8 +54,8 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 500, 
-        'alpha': 1.00001,
-        'erg_ub' : 0.001,
+        'alpha': 1.0001,
+        'erg_ub' : 0.0001,
         # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),   # Airplane
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
         # 'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),    # Pointmass
@@ -72,14 +72,25 @@ def build_erg_time_opt_solver():
         'wrksp_bnds' : np.array([[0.1,3.4],[0.1,3.4],[0.2,1.4]])    # Physical
     }
 
-    obs = []
+    obs_tor = []
+    obs_box = []
     cbf_constr = []
     a = onp.load('obs_physical.npy', allow_pickle=True)
     for ele in a:
         t = Torus(ele)
-        obs.append(t)
+        obs_tor.append(t)
         # cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
         cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
+    b = onp.load('box_obs_physical.npy', allow_pickle=True)
+    for ele in b:
+        _ob_inf = {
+            'pos' : ele['pos'], 
+            'half_dims' : ele['half_dims_barr'],
+            'rot': ele['rot']
+        }
+        ob = Obstacle(_ob_inf, p=2)
+        obs_box.append(ob)
+        cbf_constr.append(sdf3cbf(robot_model.dfdt, ob.distance3))
 
 
     args.update({
@@ -165,4 +176,4 @@ def build_erg_time_opt_solver():
                     args, 
                     step_size=0.001,
                     c=1.0)
-    return solver, obs, args
+    return solver, obs_tor, obs_box, args

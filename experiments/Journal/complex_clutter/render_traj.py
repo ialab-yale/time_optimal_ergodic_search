@@ -43,16 +43,18 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
 
-    solver, obs, args = build_erg_time_opt_solver()
-    print("obs: ",end="")
-    print(obs)
+    solver, obs_tor, obs_box, args = build_erg_time_opt_solver()
+    print("obs_tor: ",end="")
+    print(obs_tor)
+    print("obs_box: ",end="")
+    print(obs_box)
 
-    env_viz = EnvViz(obs)
+    env_viz = EnvViz(obs_tor, obs_box)
     agent_viz = AgentViz(agent_name)
     rate = rospy.Rate(10)
 
     print('Solving trajectory')
-    solver.solve(args=args, max_iter=10000, eps=1e-3)
+    solver.solve(args=args, max_iter=5000, eps=1e-3)
     sol = solver.get_solution()
     print("Solved!!!")            
 
@@ -61,7 +63,7 @@ if __name__ =="__main__":
     while not rospy.is_shutdown():
         # solver.solve(args=args, max_iter=100, eps=1e-7)
         # sol = solver.get_solution()
-        with open('drone/test_trajs/fix_control/noconverge_0.001_2.pkl', 'wb') as fp:
+        with open('drone/test_trajs/fix_control/test.pkl', 'wb') as fp:
             pkl.dump(sol, fp)
         # print(f"tf: {sol['tf']}")
         # for i, _pt in enumerate(sol['x']):

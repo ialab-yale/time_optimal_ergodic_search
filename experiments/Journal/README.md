@@ -24,6 +24,16 @@ when the rviz window opens, go to File/Open Config and open src/time_optimal_erg
 ```
 python3 render_traj_stills.py
 ```
+or
+```
+python3 render_traj.py
+```
+but the second is the more updated file but the first one can easily be adapted for the desired setup.
+
+
+In order to run this on the drone, enter the drone folder and simultaneously run the robot.py file with the correct ID for the quadcopter and the trajectory.py file with the correct trajectory for the given environment. These trajectories can be generated using render_traj.py or render_traj_stills.py.
+
+
 
 ## bias_search
 Start four terminals and make sure to run the commands above in each. In the first one, run:
