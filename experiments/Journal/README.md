@@ -12,7 +12,9 @@ source /opt/ros/noetic/setup.zsh    # run this anywhere
 
 
 ## complex_clutter
-Start three terminals and make sure to run the commands above in each. In the first one, run:
+If you are running the simulation, first make sure you run tor_convert_obs2numpy.py and box_convert_obs2numpy.py if you want to change the obstacles.
+
+Next, start three terminals and make sure to run the commands above in each. In the first one, run:
 ```
 roscore
 ```
@@ -31,7 +33,7 @@ python3 render_traj.py
 but the second is the more updated file but the first one can easily be adapted for the desired setup.
 
 
-In order to run this on the drone, enter the drone folder and simultaneously run the robot.py file with the correct ID for the quadcopter and the trajectory.py file with the correct trajectory for the given environment. These trajectories can be generated using render_traj.py or render_traj_stills.py.
+In order to run this on the drone, first make sure that you source ROS2. Then, enter the drone folder and simultaneously run the robot.py file with the correct ID for the quadcopter and the trajectory.py file with the correct trajectory for the given environment. These trajectories can be generated using render_traj.py or render_traj_stills.py.
 
 
 

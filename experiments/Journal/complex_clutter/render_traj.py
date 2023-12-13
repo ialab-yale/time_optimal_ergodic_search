@@ -60,27 +60,14 @@ if __name__ =="__main__":
 
     text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(args['erg_ub'])
     print('TAKE PICTURE NOW', text_msg.text)
+    # with open('drone/test_trajs/fix_control/converge_0.0001_complex_6.pkl', 'rb') as fp:
+    #     sol = pkl.load(fp)
     while not rospy.is_shutdown():
-        # solver.solve(args=args, max_iter=100, eps=1e-7)
-        # sol = solver.get_solution()
         with open('drone/test_trajs/fix_control/test.pkl', 'wb') as fp:
             pkl.dump(sol, fp)
-        # print(f"tf: {sol['tf']}")
-        # for i, _pt in enumerate(sol['x']):
-        #     traj_msg.points[i].x = _pt[0]
-        #     traj_msg.points[i].y = _pt[1]
-        #     traj_msg.points[i].z = _pt[2]
+        
 
-        # traj_pub.publish(traj_msg)
         agent_viz.callback_trajectory(sol['x'])
-        # text_pub.publish(text_msg)
-        # br.sendTransform(
-        #         (args['x0'][0], args['x0'][1], 0.35),
-        #         (0.,0.,0.,1.),
-        #         rospy.Time.now(),
-        #         agent_name,
-        #         "world"
-        #     )
         env_viz.pub_env()
         rate.sleep()
         

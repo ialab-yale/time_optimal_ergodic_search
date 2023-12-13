@@ -68,7 +68,7 @@ class Computation(Node):
 
         # self.files = glob.glob('optimized_trajectories.npy')
 
-        with open('test_trajs/fix_control/noconverge_0.001_2.pkl', 'rb') as fp:
+        with open('test_trajs/fix_control/test.pkl', 'rb') as fp:
             self.traj = pickle.load(fp)
         # self.sol = np.load('optimized_trajectory.npy', allow_pickle=False)
 

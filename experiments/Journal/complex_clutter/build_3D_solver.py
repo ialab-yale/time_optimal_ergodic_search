@@ -54,7 +54,7 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 500, 
-        'alpha': 1.0001,
+        'alpha': 1.001,
         'erg_ub' : 0.0001,
         # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),   # Airplane
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
@@ -88,8 +88,14 @@ def build_erg_time_opt_solver():
             'half_dims' : ele['half_dims_barr'],
             'rot': ele['rot']
         }
+        _ob_inf_viz = {
+            'pos' : ele['pos'], 
+            'half_dims' : ele['half_dims'],
+            'rot': ele['rot']
+        }
         ob = Obstacle(_ob_inf, p=2)
-        obs_box.append(ob)
+        ob_viz = Obstacle(_ob_inf_viz, p=2)
+        obs_box.append(ob_viz)
         cbf_constr.append(sdf3cbf(robot_model.dfdt, ob.distance3))
 
 
@@ -124,7 +130,7 @@ def build_erg_time_opt_solver():
         e = emap(x)
         # deb.print("e: {a}", a=np.any((e<0)|(e>1)))
         """ Traj opt loss function, not the same as erg metric """
-        return np.sum(barrier_cost(e)) + tf
+        return 100*np.sum(barrier_cost(e)) + tf
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
