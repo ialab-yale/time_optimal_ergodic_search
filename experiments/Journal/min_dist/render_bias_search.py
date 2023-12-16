@@ -69,9 +69,7 @@ if __name__ =="__main__":
 
     print('publishing trajectory')
 
-    erg_ubs = [0.1, 0.01, 0.001, 0.0001]
-    # erg_ubs = erg_ubs[::-1]
-    erg_ubs = [0.1, 0.01, 0.0001]
+    erg_ubs = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
     for i, erg_ub in enumerate(erg_ubs):
         args.update({'erg_ub': erg_ub})

@@ -50,18 +50,6 @@ def build_erg_time_opt_solver(args, target_distr):
         'phik' : get_phik(target_distr.evals, basis),
     })
 
-
-
-    # opt_args = {
-    #     'N' : 100, 
-    #     'x0' : np.array([0.1, 0.1, 0., 0.]),
-    #     'xf' : np.array([0.9, 0.9, 0., 0.]),
-    #     'phik' : get_phik(target_distr.evals, basis),
-    #     'erg_ub' : 0.1,
-    #     # 'alpha' : 0.8,
-    # }
-
-
     def barrier_cost(e):
         """ Barrier function to avoid robot going out of workspace """
         return (np.maximum(0, e-1) + np.maximum(0, -e))**2
@@ -92,9 +80,9 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         return np.vstack([
-            x[0] - x0, 
+            # x[0] - x0, 
             x[1:,:]-(x[:-1,:]+dt*vmap(robot_model.dfdt)(x[:-1,:], u[:-1,:])),
-            x[-1] - xf
+            # x[-1] - xf
         ])
 
     def ineq_constr(params, args):
@@ -105,17 +93,10 @@ def build_erg_time_opt_solver(args, target_distr):
         tf = params['tf']
         N = args['N']
         dt = tf/N
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() 
-        #            for _cbf_ineq in cbf_constr]
         ck = get_ck(x, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_ring_outer = [(3.-pow(np.linalg.norm(u, axis=1), 2)).flatten()]
-        _ctrl_ring_inner = [(pow(np.linalg.norm(u, axis=1), 2) - 5.).flatten()]
-        _ctrl_box = [(np.abs(u) - 2.).flatten()]
-        _ctrl_box2 = [(u[:,0]**2 + u[:,1]**2 - 16.).flatten()]
-        # return np.concatenate(_erg_ineq + _ctrl_ring_inner + _ctrl_ring_outer)
-        # return np.concatenate(_erg_ineq)
-        return np.concatenate(_erg_ineq + _ctrl_box2)
+        _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_ring)
 
 
 
