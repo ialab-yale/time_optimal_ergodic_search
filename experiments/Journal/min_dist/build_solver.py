@@ -79,7 +79,7 @@ def build_erg_time_opt_solver(args, target_distr):
         sum_vel = sum_dist * dt
         e = vmap(emap)(x)
         """ Traj opt loss function, not the same as erg metric """
-        return np.sum(barrier_cost(e)) + sum_vel
+        return np.sum(barrier_cost(e)) + sum_dist
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -109,12 +109,13 @@ def build_erg_time_opt_solver(args, target_distr):
         #            for _cbf_ineq in cbf_constr]
         ck = get_ck(x, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_ring_outer = [(0.25-pow(np.linalg.norm(u, axis=1), 2)).flatten()]
-        _ctrl_ring_inner = [(pow(np.linalg.norm(u, axis=1), 2) - 2.25).flatten()]
+        _ctrl_ring_outer = [(3.-pow(np.linalg.norm(u, axis=1), 2)).flatten()]
+        _ctrl_ring_inner = [(pow(np.linalg.norm(u, axis=1), 2) - 5.).flatten()]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
+        _ctrl_box2 = [(u[:,0]**2 + u[:,1]**2 - 16.).flatten()]
         # return np.concatenate(_erg_ineq + _ctrl_ring_inner + _ctrl_ring_outer)
         # return np.concatenate(_erg_ineq)
-        return np.concatenate(_erg_ineq + _ctrl_box)
+        return np.concatenate(_erg_ineq + _ctrl_box2)
 
 
 
