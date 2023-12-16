@@ -8,6 +8,7 @@ from jax.lax import scan
 # from jax.ops import index_update, index
 import jax.random as jnp_random
 import jax.numpy as np
+import jax.debug as deb
 
 from jax.flatten_util import ravel_pytree
 
@@ -41,7 +42,7 @@ def build_erg_time_opt_solver(args, target_distr):
             (x[1]-workspace_bnds[1][0])/(workspace_bnds[1][1]-workspace_bnds[1][0])])
             
     
-    basis           = BasisFunc(n_basis=[8,8], emap=emap)
+    basis           = BasisFunc(n_basis=[16,16], emap=emap)
     erg_metric      = ErgodicMetric(basis)
     robot_model     = SingleIntegrator3D()
     n,m = robot_model.n, robot_model.m
@@ -67,7 +68,7 @@ def build_erg_time_opt_solver(args, target_distr):
         sum_vel = sum_dist * dt
         e = vmap(emap)(x)
         """ Traj opt loss function, not the same as erg metric """
-        return np.sum(barrier_cost(e)) + sum_dist
+        return 100*np.sum(barrier_cost(e)) + sum_dist
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -94,7 +95,8 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         ck = get_ck(x, basis, tf, dt)
-        _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
+        _erg_ineq = [np.array([10*(erg_metric(ck, phik) - args['erg_ub']), -tf])]
+        deb.print("erg: {a}", a=erg_metric(ck, phik))
         _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
         return np.concatenate(_erg_ineq + _ctrl_ring)
 

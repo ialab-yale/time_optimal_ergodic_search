@@ -5,7 +5,8 @@ from functools import partial
 import numpy as onp
 
 def get_hk(k): # normalizing factor for basis function
-    _hk = (2. * k + onp.sin(2 * k))/(4. * k)
+    # _hk = (2. * k + onp.sin(2 * k))/(4. * k)
+    _hk = (1.*k)/(2.*k)
     _hk = _hk.at[onp.isnan(_hk)].set(1.)
     return onp.sqrt(onp.prod(_hk))
 

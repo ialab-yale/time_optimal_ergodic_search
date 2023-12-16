@@ -70,6 +70,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+    erg_ubs = [0.4457012232440685, 0.09430300324392804, 0.04284366620455568, 0.020641994046851114, 0.0036160365096282454, 0.0006511325247227666, 0.00018496543763877704, 5.3992406750258665e-05]
 
     for i, erg_ub in enumerate(erg_ubs):
         args.update({'erg_ub': erg_ub})
@@ -77,7 +78,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         # solver.reset()
-        solver.solve(args=args, max_iter=20000, eps=1e-7)
+        solver.solve(args=args, max_iter=20000, eps=1e-5)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
