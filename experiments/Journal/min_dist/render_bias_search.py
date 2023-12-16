@@ -46,8 +46,8 @@ if __name__ =="__main__":
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([1.75, -0.8, 0.]),
         'xf' : np.array([1.75, 3.2, 0.]),
-        'erg_ub' : 0.2,
-        'alpha' : 0.5,
+        'erg_ub' : 0.1,
+        'alpha' : 1.00005,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
     # <-- prev values 
@@ -71,21 +71,25 @@ if __name__ =="__main__":
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001]
     # erg_ubs = erg_ubs[::-1]
+    erg_ubs = [0.1, 0.01, 0.0001]
 
     for i, erg_ub in enumerate(erg_ubs):
         args.update({'erg_ub': erg_ub})
+        solver = build_erg_time_opt_solver(args, target_distr)
 
         print('Solving trajectory for upper bound: ', erg_ub)
-        solver.reset()
-        solver.solve(args=args, max_iter=10000, eps=1e-7)
+        # solver.reset()
+        solver.solve(args=args, max_iter=20000, eps=1e-7)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
-        text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
+        sum_dist = 0
+        x = sol['x']
+        for i in range(len(x)-1):
+            sum_dist += np.linalg.norm(x[i+1]-x[i])
+        text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Min Dist: {:.2f}'.format(sum_dist) + '\n' 'Maximum Ergodicity: {}'.format(erg_ub)
         print(text_msg.text)
         for _ in range(100):
-        
-            
 
             for i, _pt in enumerate(sol['x']):
                 traj_msg.points[i].x = _pt[0]

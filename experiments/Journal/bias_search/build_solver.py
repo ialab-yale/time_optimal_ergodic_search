@@ -12,8 +12,7 @@ import jax.numpy as np
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator
-
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
 from time_opt_erg_lib.cbf import constr2CBF
@@ -44,7 +43,7 @@ def build_erg_time_opt_solver(args, target_distr):
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
     # robot_model     = DoubleIntegrator()
-    robot_model     = SingleIntegrator()
+    robot_model     = SingleIntegrator3D()
     n,m = robot_model.n, robot_model.m
 
     # with open('cluttered_env.yml', 'r') as file:

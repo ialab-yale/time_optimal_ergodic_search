@@ -47,7 +47,7 @@ if __name__ =="__main__":
         'x0' : np.array([1.75, -0.8, 0.]),
         'xf' : np.array([1.75, 3.2, 0.]),
         'erg_ub' : 0.2,
-        'alpha' : 0.5,
+        'alpha' : 1.001,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
     # <-- prev values 

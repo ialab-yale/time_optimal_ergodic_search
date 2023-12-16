@@ -12,7 +12,7 @@ import jax.numpy as np
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
@@ -43,7 +43,7 @@ def build_erg_time_opt_solver(args, target_distr):
     
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = SingleIntegrator()
+    robot_model     = SingleIntegrator3D()
     n,m = robot_model.n, robot_model.m
 
     args.update({
@@ -79,7 +79,7 @@ def build_erg_time_opt_solver(args, target_distr):
         sum_vel = sum_dist * dt
         e = vmap(emap)(x)
         """ Traj opt loss function, not the same as erg metric """
-        return 1000.*np.sum(barrier_cost(e)) + sum_vel
+        return np.sum(barrier_cost(e)) + sum_vel
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -109,17 +109,13 @@ def build_erg_time_opt_solver(args, target_distr):
         #            for _cbf_ineq in cbf_constr]
         ck = get_ck(x, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
+        _ctrl_ring_outer = [(0.25-pow(np.linalg.norm(u, axis=1), 2)).flatten()]
+        _ctrl_ring_inner = [(pow(np.linalg.norm(u, axis=1), 2) - 2.25).flatten()]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
+        # return np.concatenate(_erg_ineq + _ctrl_ring_inner + _ctrl_ring_outer)
+        # return np.concatenate(_erg_ineq)
         return np.concatenate(_erg_ineq + _ctrl_box)
-        # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
-        # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
-        # return np.array(0.)
-        # p = x[:,:2] # extract just the position component of the trajectory
-        # # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-        # obs_val = [vmap(_cbf_ineq)(x, u).flatten() for _cbf_ineq in self.cbf_consts]
-        # ctrl_box = [(np.abs(u) - 2.).flatten()]
-        # _ineq_list = ctrl_box + obs_val
-        # return np.array(0.)
+
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
