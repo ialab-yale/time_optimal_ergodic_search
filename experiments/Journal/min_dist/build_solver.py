@@ -42,7 +42,7 @@ def build_erg_time_opt_solver(args, target_distr):
             (x[1]-workspace_bnds[1][0])/(workspace_bnds[1][1]-workspace_bnds[1][0])])
             
     
-    basis           = BasisFunc(n_basis=[16,16], emap=emap)
+    basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
     robot_model     = SingleIntegrator3D()
     n,m = robot_model.n, robot_model.m
@@ -95,7 +95,7 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         ck = get_ck(x, basis, tf, dt)
-        _erg_ineq = [np.array([10*(erg_metric(ck, phik) - args['erg_ub']), -tf])]
+        _erg_ineq = [np.array([30*(erg_metric(ck, phik) - args['erg_ub']), -tf])]
         deb.print("erg: {a}", a=erg_metric(ck, phik))
         _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
         return np.concatenate(_erg_ineq + _ctrl_ring)
@@ -103,7 +103,15 @@ def build_erg_time_opt_solver(args, target_distr):
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
+    # print(np.shape(x))
+    # x = pkl.load(open('trajs.pkl', 'rb'))
+    # x = x[3]
+    # x[:,1] -= 1
+    # x = np.hstack((x, np.zeros((616, 1))))
+    # print(np.max(x[:1]))
     u = np.zeros((args['N'], robot_model.m))
+    # print(np.shape(u))
+    # u = np.zeros((616, robot_model.m))
     init_sol = {'x': x, 'u' : u, 'tf': np.array(10.0)}
     solver = AugmentedLagrangeSolver(
                     init_sol,

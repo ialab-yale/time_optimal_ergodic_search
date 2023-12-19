@@ -50,15 +50,7 @@ if __name__ =="__main__":
         'alpha' : 1.00005,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
-    # <-- prev values 
-    # args = {
-    #     'N' : 200, 
-    #     'x0' : np.array([0.5, 0.1]),
-    #     'xf' : np.array([2.0, 3.2]),
-    #     'erg_ub' : 0.2,
-    #     'alpha' : 0.5,
-    #     'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
-    # }
+
     target_distr    = TargetDistribution(args['wrksp_bnds'])
 
     solver = build_erg_time_opt_solver(args, target_distr)
@@ -70,7 +62,8 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
-    erg_ubs = [0.4457012232440685, 0.09430300324392804, 0.04284366620455568, 0.020641994046851114, 0.0036160365096282454, 0.0006511325247227666, 0.00018496543763877704, 5.3992406750258665e-05]
+    erg_ubs = [0.4457012232440685, 0.09430300324392804, 0.04284366620455568, 0.020641994046851114, 0.0036160365096282454, 0.0006511325247227666, 0.00018496543763877704, 0.00006]
+    # erg_ubs = [0.00018496543763877704]
 
     for i, erg_ub in enumerate(erg_ubs):
         args.update({'erg_ub': erg_ub})
@@ -78,12 +71,16 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         # solver.reset()
-        solver.solve(args=args, max_iter=20000, eps=1e-5)
+        solver.solve(args=args, max_iter=0, eps=1e-7)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
         sum_dist = 0
         x = sol['x']
+        # x = pkl.load(open('trajs.pkl', 'rb'))
+        # x = x[3]
+        # x[:,1] -= 1
+        # x = np.hstack((x, np.zeros((616, 1))))
         for i in range(len(x)-1):
             sum_dist += np.linalg.norm(x[i+1]-x[i])
         text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Min Dist: {:.2f}'.format(sum_dist) + '\n' 'Maximum Ergodicity: {}'.format(erg_ub)
