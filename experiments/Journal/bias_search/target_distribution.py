@@ -67,12 +67,12 @@ class TargetDistribution(object):
         #         + np.exp(-10.5 * np.sum((x[:2] - np.array([2.5, .0]))**2)) \
         #         + np.exp(-10.5 * np.sum((x[:2] - np.array([1.2, 2.0]))**2)) \
         #             + np.exp(-10.5 * np.sum((x[:2] - np.array([2.5, 3.0]))**2)))
-        # return 0.001
+        return 0.001
         # return np.exp(-60.5 * np.sum((x[:2] - 0.2)**2)) \
         #             + np.exp(-60.5 * np.sum((x[:2] - 0.75)**2)) \
         #             + np.exp(-60.5 * np.sum((x[:2] - np.array([0.2, 0.75]))**2)) \
         #             + np.exp(-60.5 * np.sum((x[:2] - np.array([0.75, 0.2]))**2))
-        return 0.25*(np.exp(-10.5 * np.sum((x[:1] - np.array([1.75]))**2)))
+        # return 0.25*(np.exp(-10.5 * np.sum((x[:1] - np.array([1.75]))**2)))
         # return 0.5*(np.exp(-10.5 * np.sum((x[:2] - np.array([0.5, 1.5]))**2)) \
         #         + np.exp(-10.5 * np.sum((x[:2] - np.array([3.0, 1.5]))**2)))
         
