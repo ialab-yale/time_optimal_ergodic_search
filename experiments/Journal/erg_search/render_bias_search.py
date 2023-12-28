@@ -41,7 +41,7 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 475, 
+        'N' : 336, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([1.75, -0.8, 0.]),
@@ -69,7 +69,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     solver.reset()
-    solver.solve(args=args, max_iter=100000, eps=5e-4)
+    solver.solve(args=args, max_iter=100000, eps=1e-7)
     sol = solver.get_solution()
     # agent_viz.callback_trajectory(sol['x'])
     # env_viz.pub_env()
