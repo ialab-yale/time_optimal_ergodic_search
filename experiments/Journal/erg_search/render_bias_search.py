@@ -24,30 +24,29 @@ if __name__ =="__main__":
     traj_pub = rospy.Publisher(agent_name + '/planned_traj', Trajectory, queue_size=10)
 
     text_pub = rospy.Publisher(agent_name + '/viz/text', Marker, queue_size=10)
-    text_msg = Marker()
-    text_msg.header.frame_id = "world"
-    text_msg.color.a = 1.0
-    text_msg.color.r = 0.0
-    text_msg.color.g = 0.0
-    text_msg.color.b = 0.0
-    text_msg.scale.z = 0.1
-    text_msg.type = Marker.TEXT_VIEW_FACING
-    text_msg.text = "Testing"
-    text_msg.pose.position.x = 0.
-    text_msg.pose.position.y = 0.4
-    text_msg.pose.position.z = 0.5
+    # text_msg = Marker()
+    # text_msg.header.frame_id = "world"
+    # text_msg.color.a = 1.0
+    # text_msg.color.r = 0.0
+    # text_msg.color.g = 0.0
+    # text_msg.color.b = 0.0
+    # text_msg.scale.z = 0.1
+    # text_msg.type = Marker.TEXT_VIEW_FACING
+    # text_msg.text = "Testing"
+    # text_msg.pose.position.x = 0.
+    # text_msg.pose.position.y = 0.4
+    # text_msg.pose.position.z = 0.5
 
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 100, 
+        'N' : 475, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([1.75, -0.8, 0.]),
         'xf' : np.array([1.75, 3.2, 0.]),
-        'erg_ub' : 0.2,
-        'alpha' : 1.001,
+        'alpha' : 1.0001,
         'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
     }
     # <-- prev values 
@@ -70,12 +69,12 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     solver.reset()
-    solver.solve(args=args, max_iter=10000, eps=1e-7)
+    solver.solve(args=args, max_iter=100000, eps=5e-4)
     sol = solver.get_solution()
     # agent_viz.callback_trajectory(sol['x'])
     # env_viz.pub_env()
     # text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
-    print(text_msg.text)
+    # print(text_msg.text)
     for _ in range(100):
     
         
@@ -85,7 +84,7 @@ if __name__ =="__main__":
             traj_msg.points[i].y = _pt[1]
 
         traj_pub.publish(traj_msg)
-        text_pub.publish(text_msg)
+        # text_pub.publish(text_msg)
         br.sendTransform(
                 (args['x0'][0], args['x0'][1], 0.35),
                 (0.,0.,0.,1.),

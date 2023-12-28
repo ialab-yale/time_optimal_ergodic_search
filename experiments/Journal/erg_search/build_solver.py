@@ -8,6 +8,7 @@ from jax.lax import scan
 # from jax.ops import index_update, index
 import jax.random as jnp_random
 import jax.numpy as np
+import jax.debug as deb
 
 from jax.flatten_util import ravel_pytree
 
@@ -91,8 +92,9 @@ def build_erg_time_opt_solver(args, target_distr):
         ck = get_ck(x, basis, tf, dt)
         phik = args['phik']
         """ Traj opt loss function, not the same as erg metric """
-        # return 1000.*np.sum(barrier_cost(e)) + tf
-        return 100*erg_metric(ck, phik) \
+        erg = erg_metric(ck, phik)
+        deb.print("erg: {a}", a=erg)
+        return 100*erg \
                     + 0.1 * np.mean(u**2) \
                     + np.sum(barrier_cost(e))
 
@@ -120,21 +122,8 @@ def build_erg_time_opt_solver(args, target_distr):
         tf = args['tf']
         N = args['N']
         dt = tf/N
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() 
-        #            for _cbf_ineq in cbf_constr]
-        ck = get_ck(x, basis, tf, dt)
-        _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
         return np.concatenate(_ctrl_box)
-        # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
-        # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
-        # return np.array(0.)
-        # p = x[:,:2] # extract just the position component of the trajectory
-        # # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-        # obs_val = [vmap(_cbf_ineq)(x, u).flatten() for _cbf_ineq in self.cbf_consts]
-        # ctrl_box = [(np.abs(u) - 2.).flatten()]
-        # _ineq_list = ctrl_box + obs_val
-        # return np.array(0.)
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
@@ -146,6 +135,6 @@ def build_erg_time_opt_solver(args, target_distr):
                     eq_constr, 
                     ineq_constr, 
                     args, 
-                    step_size=1e-3,
+                    step_size=1e-2,
                     c=1.0)
     return solver
