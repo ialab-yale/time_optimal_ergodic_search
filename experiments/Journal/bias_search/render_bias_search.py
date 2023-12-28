@@ -41,14 +41,14 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 100, 
+        'N' : 336, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
-        'x0' : np.array([1.75, -0.8, 0.]),
-        'xf' : np.array([1.75, 3.2, 0.]),
+        'x0' : np.array([0.1, 0.1, 0.]),
+        'xf' : np.array([0.9, 0.9, 0.]),
         'erg_ub' : 0.2,
-        'alpha' : 1.001,
-        'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
+        'alpha' : 1.0001,
+        'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }
     # <-- prev values 
     # args = {
@@ -70,6 +70,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001]
+    erg_ubs = [0.0029590]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -77,7 +78,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=10000, eps=1e-7)
+        solver.solve(args=args, max_iter=100000, eps=1e-7)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()

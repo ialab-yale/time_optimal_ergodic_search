@@ -94,9 +94,7 @@ def build_erg_time_opt_solver(args, target_distr):
         """ Traj opt loss function, not the same as erg metric """
         erg = erg_metric(ck, phik)
         deb.print("erg: {a}", a=erg)
-        return 100*erg \
-                    + 0.1 * np.mean(u**2) \
-                    + np.sum(barrier_cost(e))
+        return erg + np.sum(barrier_cost(e))
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -123,6 +121,7 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
+        _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
         return np.concatenate(_ctrl_box)
 
 

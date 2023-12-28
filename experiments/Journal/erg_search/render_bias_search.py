@@ -44,10 +44,10 @@ if __name__ =="__main__":
         'N' : 336, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
-        'x0' : np.array([1.75, -0.8, 0.]),
-        'xf' : np.array([1.75, 3.2, 0.]),
+        'x0' : np.array([0.1, 0.1, 0.]),
+        'xf' : np.array([0.9, 0.9, 0.]),
         'alpha' : 1.0001,
-        'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
+        'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }
     # <-- prev values 
     # args = {
