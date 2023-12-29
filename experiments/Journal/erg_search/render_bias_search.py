@@ -69,7 +69,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     solver.reset()
-    solver.solve(args=args, max_iter=100000, eps=1e-8)
+    solver.solve(args=args, max_iter=100000, eps=1e-8, alpha=1.0001)
     sol = solver.get_solution()
     # agent_viz.callback_trajectory(sol['x'])
     # env_viz.pub_env()
