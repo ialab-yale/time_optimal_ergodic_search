@@ -2,6 +2,7 @@ import jax.numpy as np
 from jax import vmap
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mpltf
+from matplotlib.patches import Circle
 
 def rot(th):
     return np.array(
@@ -40,15 +41,15 @@ class Obstacle(object):
         return self._obs_dict[key]
 
     def draw(self):
-        rect = plt.Rectangle(self.pos-self.half_dims, 
-                            self.dims[0], self.dims[1])
-        return rect
+        circ = Circle(self.pos, 
+                            self.half_dims[0])
+        return circ
     def distance3(self, x):
         return 1.0 - np.linalg.norm((x-self.pos)/(self.half_dims+self.buff), ord=2)
 
     def distance(self, x):
         # return 1.0 - np.linalg.norm(self.rot @ ((x-self.pos)/(self.half_dims+self.buff)), ord=4)
-        return 1.0 - np.linalg.norm((self.rotT@(x-self.pos))/(self.half_dims+self.buff), ord=4)
+        return 1.0 - np.linalg.norm((self.rotT@(x-self.pos))/(self.half_dims+self.buff), ord=2)
         # dx = (x[0] - self.pos[0])/self.half_dims[0] 
         # dy = (x[1] - self.pos[1])/self.half_dims[1] 
         # return 1 - (dx**self.p + dy**self.p)
