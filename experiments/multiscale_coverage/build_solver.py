@@ -36,16 +36,21 @@ def build_erg_time_opt_solver(args):
 
     # with open('../../config/cluttered_env.yml', 'r') as file:
     #     obs_info = yaml.safe_load(file)
-    # np.meshgrid(np.linspace())
+    XX, YY = np.meshgrid(*[np.linspace(10,90, num=9)]*2)
+    x_pts = np.stack([XX.ravel(), YY.ravel()]).T
     obs = []
-    # cbf_constr = []
-    # for _ob_inf in obs_info['obstacles']:
-    #     _ob = Obstacle(_ob_inf)
-    #         # pos=np.array(obs_info[obs_name]['pos']), 
-    #         # half_dims=np.array(obs_info[obs_name]['half_dims']),
-    #         # th=obs_info[obs_name]['rot']
-    #     obs.append(_ob)
-    #     cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
+    cbf_constr = []
+    for _x_pt in x_pts:
+        _ob = Obstacle({
+            'pos' : _x_pt, 
+            'half_dims' : [2.0, 2.0],
+            'rot' : 0.
+        }, p=2)
+            # pos=np.array(obs_info[obs_name]['pos']), 
+            # half_dims=np.array(obs_info[obs_name]['half_dims']),
+            # th=obs_info[obs_name]['rot']
+        obs.append(_ob)
+        cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
     
     args.update({
         'phik' : get_phik(target_distr.evals, basis),
@@ -110,21 +115,12 @@ def build_erg_time_opt_solver(args):
         N = args['N']
         dt = tf/N
         e = emap(x)
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
-        #            for _cbf_ineq in cbf_constr]
+        _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+                   for _cbf_ineq in cbf_constr]
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
-        _ctrl_box = [(np.abs(u) - 10).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box)# + _cbf_ineq)
-        # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
-        # return np.array(0.)
-        # p = x[:,:2] # extract just the position component of the trajectory
-        # # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-        # obs_val = [vmap(_cbf_ineq)(x, u).flatten() for _cbf_ineq in self.cbf_consts]
-        # ctrl_box = [(np.abs(u) - 2.).flatten()]
-        # _ineq_list = ctrl_box + obs_val
-        # return np.array(0.)
-
+        _ctrl_box = [(np.abs(u) - 20).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
     u = np.zeros((args['N'], robot_model.m))
@@ -136,5 +132,5 @@ def build_erg_time_opt_solver(args):
                     ineq_constr, 
                     args, 
                     step_size=1e-2,
-                    c=1.0)
+                    c=1.)
     return solver, obs

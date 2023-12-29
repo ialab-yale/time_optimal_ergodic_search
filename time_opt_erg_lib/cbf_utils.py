@@ -12,10 +12,10 @@ def dist_func(x):
     return np.array(dist)
 
 # CBF Inequality Constraints
-# def sdf2cbf(dfdt, constr):
-#     return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:2]) - (1.-alpha) * constr(x[:2])
-def sdf2cbf(f, constr):
-    return lambda x, u, alpha: constr(f(x,u)) - (1.-alpha) * constr(x)
+def sdf2cbf(dfdt, constr):
+    return lambda x, u, alpha, dt : constr((x + dt * dfdt(x,u))[:2]) - (1.-alpha) * constr(x[:2])
+# def sdf2cbf(f, constr):
+#     return lambda x, u, alpha: constr(f(x,u)) - (1.-alpha) * constr(x)
 
 def sdf2cbfhole(f, constrout, constrin):
     return lambda x, u, alpha: np.maximum(constrout(f(x,u)) - (1.-alpha) * constrout(x), -(constrin(f(x,u)) - (1.-alpha) * constrin(x)))
