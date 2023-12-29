@@ -28,7 +28,7 @@ import yaml
 import pickle as pkl
 
 def build_erg_time_opt_solver(args):
-    basis           = BasisFunc(n_basis=[16,16])
+    basis           = BasisFunc(n_basis=[10,10])
     erg_metric      = ErgodicMetric(basis)
     robot_model     = SingleIntegrator2D()
     n,m = robot_model.n, robot_model.m
@@ -36,7 +36,7 @@ def build_erg_time_opt_solver(args):
 
     # with open('../../config/cluttered_env.yml', 'r') as file:
     #     obs_info = yaml.safe_load(file)
-    np.meshgrid(np.linspace())
+    # np.meshgrid(np.linspace())
     obs = []
     # cbf_constr = []
     # for _ob_inf in obs_info['obstacles']:
