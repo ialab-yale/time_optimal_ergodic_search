@@ -54,16 +54,16 @@ def build_erg_time_opt_solver():
 
     args = {
         'N' : 500, 
-        'alpha': 1.0003,
+        'alpha': 1.0005,
         'erg_ub' : 0.001,
         # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),   # Airplane
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
         # 'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),    # Pointmass
         # 'xf' : np.array([8., 9.0, 2.5, 0., 0., 0.]),    # Pointmass
-        'x0' : np.array([0.2, 0.2, .5]),    # SingleInt
-        'xf' : np.array([3.2, 3.2, .5]),    # SingleInt
-        'x0' : np.concatenate([np.array([0.2, 0.2, 1.25]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
-        'xf' : np.concatenate([np.array([3.2, 3.2, 1.25]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        # 'x0' : np.array([0.2, 0.2, .5]),    # SingleInt
+        # 'xf' : np.array([3.2, 3.2, .5]),    # SingleInt
+        'x0' : np.concatenate([np.array([0.2, 0.2, 1.9]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        'xf' : np.concatenate([np.array([3.2, 3.2, 1.9]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
         # 'x0' : np.array([0., 0., .5, 0., np.pi/2]),    # Physical
         # 'xf' : np.array([3.5, 3.5, .5, 0., np.pi/2]),    # Physical
         # 'x0' : np.concatenate([np.array([0.2, 0.2, .5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Physical
