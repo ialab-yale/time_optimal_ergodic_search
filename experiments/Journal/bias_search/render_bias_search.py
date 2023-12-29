@@ -41,7 +41,7 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 336, 
+        'N' : 9, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([0.1, 0.1, 0.]),
@@ -70,7 +70,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001]
-    erg_ubs = [0.0029590]
+    erg_ubs = [0.02418608032166958]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):

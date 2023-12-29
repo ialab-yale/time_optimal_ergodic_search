@@ -12,7 +12,7 @@ from vis_helpers import getHeader
 
 def getMeshMarker(id, pnt):
     _model_marker = Marker()
-    scale = 0.2
+    scale = 0.1
     _model_marker.header.frame_id = "world"
     _model_marker.header.stamp = rospy.Time(0)
     _model_marker.ns = "dude"

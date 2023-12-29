@@ -8,6 +8,7 @@ from jax.lax import scan
 # from jax.ops import index_update, index
 import jax.random as jnp_random
 import jax.numpy as np
+import jax.debug as deb
 
 from jax.flatten_util import ravel_pytree
 
@@ -117,10 +118,12 @@ def build_erg_time_opt_solver(args, target_distr):
         # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() 
         #            for _cbf_ineq in cbf_constr]
         ck = get_ck(x, basis, tf, dt)
-        _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
+        erg = erg_metric(ck, phik)
+        deb.print("erg: {a}", a=erg)
+        _erg_ineq = [np.array([erg - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
         _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box)
+        return np.concatenate(_erg_ineq + _ctrl_ring)
         # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)

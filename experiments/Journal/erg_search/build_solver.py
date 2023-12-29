@@ -41,7 +41,7 @@ def build_erg_time_opt_solver(args, target_distr):
             (x[1]-workspace_bnds[1][0])/(workspace_bnds[1][1]-workspace_bnds[1][0])])
             
     
-    basis           = BasisFunc(n_basis=[8,8], emap=emap)
+    basis           = BasisFunc(n_basis=[64,64], emap=emap)
     erg_metric      = ErgodicMetric(basis)
     # robot_model     = DoubleIntegrator()
     robot_model     = SingleIntegrator3D()
