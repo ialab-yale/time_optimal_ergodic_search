@@ -15,11 +15,6 @@ class SingleIntegrator2D(object):
         def dfdt(x, u):
             return B@u
         def f(x, u):
-            # B = np.array([
-            #     [np.cos(x[2]), 0.,],
-            #     [np.sin(x[2]), 0.],
-            #     [0., 1.]
-            # ])
             return x + self.dt*B@u
         self.f = f
         self.dfdt = dfdt

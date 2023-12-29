@@ -78,17 +78,13 @@ class AugmentedLagrangeSolver(object):
     def solve(self, args=None, max_iter=100000, eps=1e-5, alpha=1.001):
         if args is None:
             args = self.def_args
-        try:
-            _alpha = args['alpha']
-        except:
-            _alpha = alpha
         _eps = 1.0
         _prev_val   = None
 
         for k in range(max_iter):
             # self.solution, _val, self.avg_sq_grad = self.step(self.solution, args, self.avg_sq_grad, self.c)
             self.solution, self.dual_solution, self.avg_sq_grad, _val = self.step(self.solution, self.dual_solution, self.avg_sq_grad, args, self.c)
-            self.c = _alpha*self.c
+            self.c = alpha*self.c
             if _prev_val is None:
                 _prev_val = _val
             else:
