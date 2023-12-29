@@ -36,22 +36,25 @@ def build_erg_time_opt_solver(args):
 
     # with open('../../config/cluttered_env.yml', 'r') as file:
     #     obs_info = yaml.safe_load(file)
-    XX, YY = np.meshgrid(*[np.linspace(10,90, num=9)]*2)
-    x_pts = np.stack([XX.ravel(), YY.ravel()]).T
+    # XX, YY = np.meshgrid(*[np.linspace(10,90, num=9)]*2)
+    # x_pts = np.stack([XX.ravel(), YY.ravel()]).T
+    key = jnp_random.PRNGKey(10)
+    x_pts = jnp_random.uniform(key, shape=(50,2), minval=10, maxval=90)
     obs = []
     cbf_constr = []
+    obs_constr = []
     for _x_pt in x_pts:
         _ob = Obstacle({
             'pos' : _x_pt, 
             'half_dims' : [2.0, 2.0],
             'rot' : 0.
-        }, p=2)
+        }, p=2, buff=0.5)
             # pos=np.array(obs_info[obs_name]['pos']), 
             # half_dims=np.array(obs_info[obs_name]['half_dims']),
             # th=obs_info[obs_name]['rot']
         obs.append(_ob)
-        cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
-    
+        # cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
+        obs_constr.append(_ob.distance_circ)
     args.update({
         'phik' : get_phik(target_distr.evals, basis),
     })
@@ -87,8 +90,14 @@ def build_erg_time_opt_solver(args):
         N = args['N']
         dt = tf/N
         e = emap(x)
+        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+        #            for _cbf_ineq in cbf_constr]
+        _obs_constr = [
+            vmap(_ob_constr, in_axes=(0))(x).flatten() 
+                   for _ob_constr in obs_constr
+        ]
         """ Traj opt loss function, not the same as erg metric """
-        return np.sum(barrier_cost(e)) + tf
+        return np.sum(barrier_cost(e)) + tf + np.mean(20*np.exp(np.array(_obs_constr)))
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -115,12 +124,16 @@ def build_erg_time_opt_solver(args):
         N = args['N']
         dt = tf/N
         e = emap(x)
-        _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
-                   for _cbf_ineq in cbf_constr]
+        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+        #            for _cbf_ineq in cbf_constr]
+        # _obs_constr = [
+        #     vmap(_ob_constr, in_axes=(0))(x).flatten() 
+        #            for _ob_constr in obs_constr
+        # ]
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 20).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
+        return np.concatenate(_erg_ineq + _ctrl_box)# + _obs_constr)
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
     u = np.zeros((args['N'], robot_model.m))
