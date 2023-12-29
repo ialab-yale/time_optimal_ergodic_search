@@ -41,7 +41,7 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 336, 
+        'N' : 400, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([0.1, 0.1, 0.]),
@@ -69,16 +69,13 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     solver.reset()
-    solver.solve(args=args, max_iter=100000, eps=1e-7)
+    solver.solve(args=args, max_iter=100000, eps=1e-8)
     sol = solver.get_solution()
     # agent_viz.callback_trajectory(sol['x'])
     # env_viz.pub_env()
     # text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
     # print(text_msg.text)
     for _ in range(100):
-    
-        
-
         for i, _pt in enumerate(sol['x']):
             traj_msg.points[i].x = _pt[0]
             traj_msg.points[i].y = _pt[1]
