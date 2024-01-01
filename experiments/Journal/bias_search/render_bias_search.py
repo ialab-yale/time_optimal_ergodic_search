@@ -33,15 +33,15 @@ if __name__ =="__main__":
     text_msg.scale.z = 0.1
     text_msg.type = Marker.TEXT_VIEW_FACING
     text_msg.text = "Testing"
-    text_msg.pose.position.x = 0.
-    text_msg.pose.position.y = 0.4
-    text_msg.pose.position.z = 0.5
+    text_msg.pose.position.x = 0.4
+    text_msg.pose.position.y = 0.8
+    text_msg.pose.position.z = 0.8
 
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 9, 
+        'N' : 256, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
         'x0' : np.array([0.1, 0.1, 0.]),
@@ -70,7 +70,7 @@ if __name__ =="__main__":
     print('publishing trajectory')
 
     erg_ubs = [0.1, 0.01, 0.001, 0.0001]
-    erg_ubs = [0.02418608032166958]
+    erg_ubs = [0.0001650185149628669]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -78,7 +78,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=100000, eps=1e-7)
+        solver.solve(args=args, max_iter=100000, eps=1e-4, alpha=1.001)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()

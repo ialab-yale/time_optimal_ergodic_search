@@ -123,7 +123,7 @@ def build_erg_time_opt_solver(args, target_distr):
         _erg_ineq = [np.array([erg - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
         _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_ring)
+        return np.concatenate(500*_erg_ineq + _ctrl_ring)
         # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)
