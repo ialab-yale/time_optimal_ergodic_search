@@ -42,18 +42,27 @@ class Obstacle(object):
 
     def draw(self):
         circ = Circle(self.pos, 
-                            self.half_dims[0])
+                            self.half_dims[0], color='g')
         return circ
     def distance3(self, x):
         return 1.0 - np.linalg.norm((x-self.pos)/(self.half_dims+self.buff), ord=2)
 
     def distance(self, x):
         # return 1.0 - np.linalg.norm(self.rot @ ((x-self.pos)/(self.half_dims+self.buff)), ord=4)
-        return 1.0 - np.linalg.norm((self.rotT@(x-self.pos))/(self.half_dims+self.buff), ord=2)
+        return 1.0 - np.linalg.norm((self.rotT@(x-self.pos))/(self.half_dims+self.buff), ord=4)
         # dx = (x[0] - self.pos[0])/self.half_dims[0] 
         # dy = (x[1] - self.pos[1])/self.half_dims[1] 
         # return 1 - (dx**self.p + dy**self.p)
+    
+    def distance_circ(self, x):
+        # return 1.0 - np.linalg.norm(self.rot @ ((x-self.pos)/(self.half_dims+self.buff)), ord=4)
+        # return 1.0 - np.sum(np.square((self.rotT@(x-self.pos))/(self.half_dims+self.buff)))
+        # return np.sum(np.square((self.rotT@(x-self.pos))/(self.half_dims+self.buff))) - 1.0
+        return -np.sum(np.square(self.rotT@(x-self.pos))) + (self.half_dims[0]+self.buff)**2
 
+        # dx = (x[0] - self.pos[0])/self.half_dims[0] 
+        # dy = (x[1] - self.pos[1])/self.half_dims[1] 
+        # return 1 - (dx**self.p + dy**self.p)
 
 class Torus(object): 
 

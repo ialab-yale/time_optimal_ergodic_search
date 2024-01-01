@@ -5,3 +5,4 @@ experiments/Journal/min_dist_ergodic
 figures/.DS_Store
 .ipynb_checkpoints
 .vscode
+data/
