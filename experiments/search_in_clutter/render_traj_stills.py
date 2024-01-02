@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
+print('this ran')
 import jax.numpy as jnp
 from jax import vmap
 

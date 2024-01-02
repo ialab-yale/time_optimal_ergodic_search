@@ -12,7 +12,7 @@ import jax.numpy as np
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator2D
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
@@ -21,7 +21,7 @@ from time_opt_erg_lib.fourier_utils import BasisFunc, get_phik, get_ck
 from time_opt_erg_lib.target_distribution import TargetDistribution
 from time_opt_erg_lib.cbf_utils import sdf2cbf
 from IPython.display import clear_output
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver
 import yaml
@@ -30,7 +30,7 @@ import pickle as pkl
 def build_erg_time_opt_solver(args):
     basis           = BasisFunc(n_basis=[8,8])
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = SingleIntegrator()
+    robot_model     = SingleIntegrator2D()
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
 

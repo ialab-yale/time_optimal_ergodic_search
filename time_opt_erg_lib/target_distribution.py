@@ -1,7 +1,7 @@
 import jax.numpy as np
 from jax import vmap
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 class TargetDistribution(object):
     def __init__(self) -> None:
