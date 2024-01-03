@@ -7,7 +7,7 @@ from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from target_distribution import TargetDistribution
-from build_solver import build_erg_time_opt_solver
+from build_solver_revert import build_erg_time_opt_solver
 import pickle as pkl
 
 import rospy
@@ -33,22 +33,20 @@ if __name__ =="__main__":
     text_msg.scale.z = 0.1
     text_msg.type = Marker.TEXT_VIEW_FACING
     text_msg.text = "Testing"
-    text_msg.pose.position.x = 0.4
-    text_msg.pose.position.y = 0.8
-    text_msg.pose.position.z = 0.8
+    text_msg.pose.position.x = 0.
+    text_msg.pose.position.y = 0.4
+    text_msg.pose.position.z = 0.5
 
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 256, 
-        # 'x0' : np.array([1.75, -0.8, 0.,0.]),
-        # 'xf' : np.array([1.75, 3.2, 0., 0.]),
-        'x0' : np.array([0.1, 0.1, 0.]),
-        'xf' : np.array([0.9, 0.9, 0.]),
+        'N' : 100, 
+        'x0' : np.array([0.25, 0.25, 0.,0.]),
+        'xf' : np.array([3.25, 3.25, 0., 0.]),
         'erg_ub' : 0.2,
-        'alpha' : 1.0001,
-        'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
+        'alpha' : 0.5,
+        'wrksp_bnds' : np.array([[0.,4.0],[0.,4.0]])
     }
     # <-- prev values 
     # args = {
@@ -63,14 +61,13 @@ if __name__ =="__main__":
 
     solver = build_erg_time_opt_solver(args, target_distr)
     sol = solver.get_solution()
-
+    
     rate = rospy.Rate(10)
     traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
 
     print('publishing trajectory')
 
-    erg_ubs = [0.1, 0.01, 0.001, 0.0001]
-    erg_ubs = [0.01650185149628669]
+    erg_ubs = [0.1, 0.001]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -78,10 +75,8 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=100000, eps=1e-4, alpha=1.00001)
+        solver.solve(args=args, max_iter=20000, eps=1e-7, alpha=1.0001)
         sol = solver.get_solution()
-        with open('test.pkl', 'wb') as fp:
-            pkl.dump(sol, fp)
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
         text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
