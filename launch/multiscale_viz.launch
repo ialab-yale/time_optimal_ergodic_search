@@ -1,0 +1,4 @@
+<launch>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find time_optimal_ergodic_search)/rviz/multiscale_config2.rviz" />
+    <node name="drone_viz" pkg="time_optimal_ergodic_search" type="scaled_drone_viz.py" />
+</launch>
