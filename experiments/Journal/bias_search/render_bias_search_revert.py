@@ -33,20 +33,20 @@ if __name__ =="__main__":
     text_msg.scale.z = 0.1
     text_msg.type = Marker.TEXT_VIEW_FACING
     text_msg.text = "Testing"
-    text_msg.pose.position.x = 0.
-    text_msg.pose.position.y = 0.4
-    text_msg.pose.position.z = 0.5
+    text_msg.pose.position.x = 0.5
+    text_msg.pose.position.y = 1.2
+    text_msg.pose.position.z = 0.8
 
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 100, 
-        'x0' : np.array([0.25, 0.25, 0.,0.]),
-        'xf' : np.array([3.25, 3.25, 0., 0.]),
+        'N' : 9, 
+        'x0' : np.array([0.1, 0.1, 0.,0.]),
+        'xf' : np.array([0.9, 0.9, 0., 0.]),
         'erg_ub' : 0.2,
         'alpha' : 0.5,
-        'wrksp_bnds' : np.array([[0.,4.0],[0.,4.0]])
+        'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }
     # <-- prev values 
     # args = {
@@ -67,7 +67,7 @@ if __name__ =="__main__":
 
     print('publishing trajectory')
 
-    erg_ubs = [0.1, 0.001]
+    erg_ubs = [0.0383775569498539]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -75,8 +75,10 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=30000, eps=1e-6, alpha=1.00001)
+        solver.solve(args=args, max_iter=30000, eps=1e-6, alpha=1.001)
         sol = solver.get_solution()
+        with open('test.pkl', 'wb') as fp:
+            pkl.dump(sol, fp)
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
         text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
