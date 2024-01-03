@@ -41,9 +41,9 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 9, 
-        'x0' : np.array([0.1, 0.1, 0.,0.]),
-        'xf' : np.array([0.9, 0.9, 0., 0.]),
+        'N' : 81, 
+        'x0' : np.array([0.944, 0.055, 0.]),
+        'xf' : np.array([0.055, 0.944, 0.]),
         'erg_ub' : 0.2,
         'alpha' : 0.5,
         'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
@@ -67,7 +67,7 @@ if __name__ =="__main__":
 
     print('publishing trajectory')
 
-    erg_ubs = [0.0383775569498539]
+    erg_ubs = [0.001270128]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -75,7 +75,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=30000, eps=1e-6, alpha=1.001)
+        solver.solve(args=args, max_iter=100000, eps=1e-6, alpha=1.002)
         sol = solver.get_solution()
         with open('test.pkl', 'wb') as fp:
             pkl.dump(sol, fp)
