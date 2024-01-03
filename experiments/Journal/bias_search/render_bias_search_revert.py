@@ -75,7 +75,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=20000, eps=1e-7, alpha=1.0001)
+        solver.solve(args=args, max_iter=30000, eps=1e-6, alpha=1.00001)
         sol = solver.get_solution()
         # agent_viz.callback_trajectory(sol['x'])
         # env_viz.pub_env()
