@@ -7,7 +7,7 @@ from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from target_distribution import TargetDistribution
-from build_solver import build_erg_time_opt_solver
+from build_solver_revert import build_erg_time_opt_solver
 import pickle as pkl
 
 import rospy
@@ -33,21 +33,19 @@ if __name__ =="__main__":
     text_msg.scale.z = 0.1
     text_msg.type = Marker.TEXT_VIEW_FACING
     text_msg.text = "Testing"
-    text_msg.pose.position.x = 0.4
-    text_msg.pose.position.y = 0.8
+    text_msg.pose.position.x = 0.5
+    text_msg.pose.position.y = 1.2
     text_msg.pose.position.z = 0.8
 
     traj_msg = Trajectory()
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 256, 
-        # 'x0' : np.array([1.75, -0.8, 0.,0.]),
-        # 'xf' : np.array([1.75, 3.2, 0., 0.]),
-        'x0' : np.array([0.1, 0.1, 0.]),
-        'xf' : np.array([0.9, 0.9, 0.]),
+        'N' : 9, 
+        'x0' : np.array([0.1, 0.1, 0.,0.]),
+        'xf' : np.array([0.9, 0.9, 0., 0.]),
         'erg_ub' : 0.2,
-        'alpha' : 1.0001,
+        'alpha' : 0.5,
         'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }
     # <-- prev values 
@@ -63,14 +61,13 @@ if __name__ =="__main__":
 
     solver = build_erg_time_opt_solver(args, target_distr)
     sol = solver.get_solution()
-
+    
     rate = rospy.Rate(10)
     traj_msg.points = [Point(_pt[0], _pt[1], 0.35) for _pt in sol['x']]
 
     print('publishing trajectory')
 
-    erg_ubs = [0.1, 0.01, 0.001, 0.0001]
-    erg_ubs = [0.01650185149628669]
+    erg_ubs = [0.0383775569498539]
     # erg_ubs = erg_ubs[::-1]
 
     for i, erg_ub in enumerate(erg_ubs):
@@ -78,7 +75,7 @@ if __name__ =="__main__":
 
         print('Solving trajectory for upper bound: ', erg_ub)
         solver.reset()
-        solver.solve(args=args, max_iter=100000, eps=1e-4, alpha=1.00001)
+        solver.solve(args=args, max_iter=30000, eps=1e-6, alpha=1.001)
         sol = solver.get_solution()
         with open('test.pkl', 'wb') as fp:
             pkl.dump(sol, fp)

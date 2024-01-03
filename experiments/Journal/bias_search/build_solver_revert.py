@@ -14,6 +14,7 @@ from jax.flatten_util import ravel_pytree
 
 import numpy as onp
 from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D
+
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
 from time_opt_erg_lib.cbf import constr2CBF
@@ -43,8 +44,7 @@ def build_erg_time_opt_solver(args, target_distr):
     
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
-    # robot_model     = DoubleIntegrator()
-    robot_model     = SingleIntegrator3D()
+    robot_model     = DoubleIntegrator()
     n,m = robot_model.n, robot_model.m
 
     # with open('cluttered_env.yml', 'r') as file:
@@ -89,7 +89,7 @@ def build_erg_time_opt_solver(args, target_distr):
         dt = tf/N
         e = vmap(emap)(x)
         """ Traj opt loss function, not the same as erg metric """
-        return 1000.*np.sum(barrier_cost(e)) + tf
+        return 75*np.sum(barrier_cost(e)) + tf
 
     def eq_constr(params, args):
         """ dynamic equality constriants """
@@ -102,9 +102,9 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         return np.vstack([
-            x[0] - x0, 
+            # x[0] - x0, 
             x[1:,:]-(x[:-1,:]+dt*vmap(robot_model.dfdt)(x[:-1,:], u[:-1,:])),
-            x[-1] - xf
+            # x[-1] - xf
         ])
 
     def ineq_constr(params, args):
@@ -121,9 +121,9 @@ def build_erg_time_opt_solver(args, target_distr):
         erg = erg_metric(ck, phik)
         deb.print("erg: {a}", a=erg)
         _erg_ineq = [10*np.array([erg - args['erg_ub'], -tf])]
+        # _erg_ineq = [10*np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
-        _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_ring)
+        return np.concatenate(_erg_ineq + _ctrl_box)
         # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)
