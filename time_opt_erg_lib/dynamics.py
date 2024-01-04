@@ -226,7 +226,7 @@ e_z = onp.array([0.,0.,1.])
 
 g_vec = -9.81 * e_z
 
-D = onp.diag([0.01,0.01,0.1])*0.
+D = onp.diag([0.01,0.01,0.01])*1.0
 
 def hat(w):
     return np.array([
@@ -241,7 +241,7 @@ class DroneDynamics(object):
         self.n = _n 
         self.m = _m
         def dfdt(x, u):
-            u = np.clip(u, 0., 7.)
+            # u = np.clip(u, 0., 7.)
             # g = x[0:16].reshape((4,4))
             # R, p = trans_to_Rp(g)
             p = x[:3]

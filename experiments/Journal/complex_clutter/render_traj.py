@@ -54,7 +54,7 @@ if __name__ =="__main__":
     rate = rospy.Rate(10)
 
     print('Solving trajectory')
-    solver.solve(args=args, max_iter=10000, eps=1e-2, alpha=1.0005)
+    solver.solve(args=args, max_iter=100000, eps=1e-9, alpha=1.00001)
     sol = solver.get_solution()
     print("Solved!!!")            
 

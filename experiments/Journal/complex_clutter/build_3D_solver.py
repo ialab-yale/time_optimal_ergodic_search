@@ -55,31 +55,42 @@ def build_erg_time_opt_solver():
     args = {
         'N' : 500, 
         'alpha': 1.0005,
-        'erg_ub' : 0.001,
+        'erg_ub' : 0.05,
         # 'x0' : np.array([4., 0.1, 2.5, 0., np.pi/2]),   # Airplane
         # 'xf' : np.array([4., 9.0, 2.5, 0., np.pi/2]),   # Airplane
         # 'x0' : np.array([1., 0.1, 2.5, 0., 0., 0.]),    # Pointmass
         # 'xf' : np.array([8., 9.0, 2.5, 0., 0., 0.]),    # Pointmass
         # 'x0' : np.array([0.2, 0.2, .5]),    # SingleInt
         # 'xf' : np.array([3.2, 3.2, .5]),    # SingleInt
-        'x0' : np.concatenate([np.array([0.2, 0.2, 1.9]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
-        'xf' : np.concatenate([np.array([3.2, 3.2, 1.9]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        'x0' : np.concatenate([np.array([0.2, 0.2, 0.2]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
+        'xf' : np.concatenate([np.array([2.9, 2.9, 2.9]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Drone
         # 'x0' : np.array([0., 0., .5, 0., np.pi/2]),    # Physical
         # 'xf' : np.array([3.5, 3.5, .5, 0., np.pi/2]),    # Physical
         # 'x0' : np.concatenate([np.array([0.2, 0.2, .5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Physical
         # 'xf' : np.concatenate([np.array([3.2, 3.2, .5]), np.eye(3).ravel(), np.zeros(3), np.zeros(3)]),   # Physical
         # 'wrksp_bnds' : np.array([[0.,10.],[0.,10],[0.,7.]])   # Simulation
-        'wrksp_bnds' : np.array([[0.1,3.4],[0.1,3.4],[0.1,3.4]])    # Physical
+        'wrksp_bnds' : np.array([[0,3],[0,3],[0,3]])    # Physical
     }
 
     obs_tor = []
     obs_box = []
     cbf_constr = []
-    a = onp.load('tor_obs.npy', allow_pickle=True)
-    for ele in a:
-        t = Torus(ele)
-        obs_tor.append(t)
-        cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
+    # a = onp.load('tor_obs.npy', allow_pickle=True)
+    # print(a[0])
+    # input()
+    # for ele in a:
+    #     t = Torus(ele)
+    #     obs_tor.append(t)
+    #     cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
+    obj_info = {
+        'pos' : [1.5, 1.5, 1.5],
+        'r1' : 0.8,
+        'r2' : 0.2,
+        'rot' : 0.0
+    }
+    t = Torus(obj_info)
+    obs_tor.append(t)
+    cbf_constr.append(sdf3cbf(robot_model.dfdt, t.distance))
 
     # b = onp.load('box_obs_physical.npy', allow_pickle=True)
     # for ele in b:
@@ -164,18 +175,18 @@ def build_erg_time_opt_solver():
         # deb.print("sdf: {a}", a=np.any(_sdf_ineq[0]>0))
         ck = get_ck(e, basis, tf, dt)
         erg = erg_metric(ck, phik)
-        _erg_ineq = [np.array([erg - args['erg_ub'], -tf])]
+        _erg_ineq = [np.array([10*(erg - args['erg_ub']), -tf])]
         deb.print("erg: {a}", a=erg)
         # _ctrl_box = [(-u[:,0]+.5).flatten(), (u[:,0]-5.0).flatten(), (np.abs(u[:,1:]) - np.pi/3).flatten()]
-        _ctrl_box = [(abs(u[:,:])-8.).flatten()]  # For single integrator dynamics
-        return np.concatenate(100*_erg_ineq + _ctrl_box + _cbf_ineq)
+        _ctrl_box = [(-u).flatten(), (u-8.0).flatten()]  # For single integrator dynamics
+        return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _cbf_ineq)
         # return np.concatenate(_erg_ineq + _ctrl_box )
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
     u = np.zeros((args['N'], robot_model.m))
-    init_sol = {'x': x, 'u' : u, 'tf': np.array(22.0)}
+    init_sol = {'x': x, 'u' : u, 'tf': np.array(10.0)}
     solver = AugmentedLagrangeSolver(
                     init_sol,
                     loss, 
@@ -183,5 +194,5 @@ def build_erg_time_opt_solver():
                     ineq_constr, 
                     args, 
                     step_size=0.001,
-                    c=0.6)
+                    c=1.)
     return solver, obs_tor, obs_box, args
