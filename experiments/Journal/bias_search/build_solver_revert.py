@@ -44,7 +44,7 @@ def build_erg_time_opt_solver(args, target_distr):
     
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = DoubleIntegrator()
+    robot_model     = SingleIntegrator3D()
     n,m = robot_model.n, robot_model.m
 
     # with open('cluttered_env.yml', 'r') as file:
@@ -102,9 +102,9 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         return np.vstack([
-            # x[0] - x0, 
+            x[0] - x0, 
             x[1:,:]-(x[:-1,:]+dt*vmap(robot_model.dfdt)(x[:-1,:], u[:-1,:])),
-            # x[-1] - xf
+            x[-1] - xf
         ])
 
     def ineq_constr(params, args):
@@ -123,7 +123,8 @@ def build_erg_time_opt_solver(args, target_distr):
         _erg_ineq = [10*np.array([erg - args['erg_ub'], -tf])]
         # _erg_ineq = [10*np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box)
+        _ctrl_disk = [(u[:,0]**2 + u[:,1]**2 - 1.2345).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_disk)
         # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
         # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
         # return np.array(0.)

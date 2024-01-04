@@ -35,6 +35,7 @@ class AugmentedLagrangeSolver(object):
             a = np.sum(lam * _eq_constr + c*0.5 * (_eq_constr)**2)
             b = (1/c)*0.5 * np.sum(np.maximum(0., mu + c*_ineq_constr)**2 - mu**2)
             # deb.print("eq: {a}", a=np.max(_eq_constr))
+            # deb.print("ineq: {a}", a=np.max(_ineq_constr))
             # deb.print("ineq: {a}", a=_ineq_constr[:2])
             # deb.print("eq full: {a}", a=a)
             # deb.print("ineq full: {a}", a=b)
