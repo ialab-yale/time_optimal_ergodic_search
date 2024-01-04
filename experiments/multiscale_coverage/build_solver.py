@@ -147,3 +147,101 @@ def build_erg_time_opt_solver(args):
                     step_size=1e-2,
                     c=1.)
     return solver, obs
+
+
+def build_inspection_erg_time_opt_solver(args):
+    basis           = BasisFunc(n_basis=[10,10])
+    erg_metric      = ErgodicMetric(basis)
+    robot_model     = SingleIntegrator2D()
+    n,m = robot_model.n, robot_model.m
+    target_distr    = TargetDistribution()
+
+    args.update({
+        'phik' : get_phik(target_distr.evals, basis),
+    })
+
+    ## <--- I DO NOT LIKE THIS
+    workspace_bnds = args['wrksp_bnds']
+
+    # opt_args = {
+    #     'N' : 100, 
+    #     'x0' : np.array([0.1, 0.1, 0., 0.]),
+    #     'xf' : np.array([0.9, 0.9, 0., 0.]),
+    #     'phik' : get_phik(target_distr.evals, basis),
+    #     'erg_ub' : 0.1,
+    #     # 'alpha' : 0.8,
+    # }
+
+    @vmap
+    def emap(x):
+        """ Function that maps states to workspace """
+        return np.array([
+            (x[0]-workspace_bnds[0][0])/(workspace_bnds[0][1]-workspace_bnds[0][0]), 
+            (x[1]-workspace_bnds[1][0])/(workspace_bnds[1][1]-workspace_bnds[1][0])])
+            
+    def barrier_cost(e):
+        """ Barrier function to avoid robot going out of workspace """
+        return (np.maximum(0, e-1) + np.maximum(0, -e))**2
+
+    # @jit
+    def loss(params, args):
+        x = params['x']
+        u = params['u']
+        tf = params['tf']
+        N = args['N']
+        dt = tf/N
+        e = emap(x)
+        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+        #            for _cbf_ineq in cbf_constr]
+
+        """ Traj opt loss function, not the same as erg metric """
+        return np.sum(barrier_cost(e)) + tf
+
+    def eq_constr(params, args):
+        """ dynamic equality constriants """
+        x = params['x']
+        u = params['u']
+
+        x0 = args['x0']
+        xf = args['xf']
+        tf = params['tf']
+        N = args['N']
+        dt = tf/N
+        return np.vstack([
+            x[0] - x0, 
+            x[1:,:]-(x[:-1,:]+dt*vmap(robot_model.dfdt)(x[:-1,:], u[:-1,:])),
+            x[-1] - xf
+        ])
+
+    def ineq_constr(params, args):
+        """ inequality constraints"""
+        x = params['x']
+        u = params['u']
+        phik = args['phik']
+        tf = params['tf']
+        N = args['N']
+        dt = tf/N
+        e = emap(x)
+        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
+        #            for _cbf_ineq in cbf_constr]
+        # _obs_constr = [
+        #     vmap(_ob_constr, in_axes=(0))(x).flatten() 
+        #            for _ob_constr in obs_constr
+        # ]
+        ck = get_ck(e, basis, tf, dt)
+        _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
+        _ctrl_box = [(np.abs(u) - 2).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_box)# + _obs_constr)
+
+    x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
+    u = np.zeros((args['N'], robot_model.m))
+    init_sol = {'x': x, 'u' : u, 'tf': np.array(2.0)}
+    solver = AugmentedLagrangeSolver(
+                    init_sol,
+                    loss, 
+                    eq_constr, 
+                    ineq_constr, 
+                    args, 
+                    step_size=1e-2,
+                    c=1.)
+    return solver
