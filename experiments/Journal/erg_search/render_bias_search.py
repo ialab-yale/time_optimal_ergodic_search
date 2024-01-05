@@ -41,11 +41,11 @@ if __name__ =="__main__":
     traj_msg.name= agent_name + "_traj"
 
     args = {
-        'N' : 400, 
+        'N' : 81, 
         # 'x0' : np.array([1.75, -0.8, 0.,0.]),
         # 'xf' : np.array([1.75, 3.2, 0., 0.]),
-        'x0' : np.array([0.1, 0.1, 0.]),
-        'xf' : np.array([0.9, 0.9, 0.]),
+        'x0' : np.array([0.9444, 0.055, 0.]),
+        'xf' : np.array([0.055, 0.9444, 0.]),
         'alpha' : 1.0001,
         'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }

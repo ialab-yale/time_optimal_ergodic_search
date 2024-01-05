@@ -121,8 +121,8 @@ def build_erg_time_opt_solver(args, target_distr):
         N = args['N']
         dt = tf/N
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
-        _ctrl_ring = [(u[:,0]**2 + u[:,1]**2 - 9.).flatten()]
-        return np.concatenate(_ctrl_box)
+        _ctrl_disk = [(u[:,0]**2 + u[:,1]**2 - 1.2345).flatten()]
+        return np.concatenate(_ctrl_disk)
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)
