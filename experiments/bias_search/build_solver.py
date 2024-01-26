@@ -12,7 +12,7 @@ import jax.numpy as np
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator
+from time_opt_erg_lib.dynamics import DoubleIntegrator
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
