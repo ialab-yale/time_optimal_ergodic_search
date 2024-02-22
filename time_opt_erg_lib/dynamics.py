@@ -83,11 +83,30 @@ class NDDoubleIntegrator(object):
             return np.concatenate((x[ndim:],u),axis=-1)
         self.dfdt = dfdt
 
-class KinematicBicycle(object):
+# class KinematicBicycle(object):
+#     def __init__(self) -> None:
+#         self.dt = 0.1
+#         self.n = 3
+#         self.m = 2 
+#         self.l = 1.0
+#         def dfdt(x, u):
+#             v = u[0]
+#             w = u[1]
+#             return np.array([
+#                 v * np.cos(x[2]),
+#                 v * np.sin(x[2]),
+#                 w
+#             ]) 
+#         def f(x, u):
+#             return x + self.dt * dfdt(x, u)
+#         self.f      = f
+#         self.dfdt   = dfdt
+
+class KinematicUnicycle(object):
     def __init__(self) -> None:
         self.dt = 0.1
         self.n = 3
-        self.m = 2 
+        self.m = 2
         self.l = 1.0
         def dfdt(x, u):
             v = u[0]
@@ -101,6 +120,24 @@ class KinematicBicycle(object):
             return x + self.dt * dfdt(x, u)
         self.f      = f
         self.dfdt   = dfdt
+
+class SingleIntegratorBearing2D(object):
+    def __init__(self) -> None:
+        self.dt = 0.1
+        self.n = 3
+        self.m = 3
+        B = np.array([
+            [1.,0.,0.],
+            [0.,1.,0.],
+            [0.,0.,1.]
+        ])
+        def dfdt(x, u):
+            return B@u
+        def f(x, u):
+            return x + self.dt*B@u
+        self.f = f
+        self.dfdt = dfdt
+
 
 class ThreeDAirCraftModel(object):
     def __init__(self) -> None:

@@ -13,8 +13,8 @@ import jax.debug as deb
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from sensor_model import GaussianSensorModel, get_sensor_ck
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D
+from sensor_model import GaussianSensorModel, LocalizationSensorModel, get_sensor_ck
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D, SingleIntegrator2D
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
@@ -30,7 +30,7 @@ import yaml
 import pickle as pkl
 
 
-def build_erg_time_opt_solver(args, target_distr):
+def build_erg_time_opt_solver(args, target_distr, sensor_model):
     
     ## <--- I DO NOT LIKE THIS
     workspace_bnds = args['wrksp_bnds']
@@ -45,8 +45,8 @@ def build_erg_time_opt_solver(args, target_distr):
     
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = SingleIntegrator3D()
-    sensor          = GaussianSensorModel(np.array([0.1, 0.1]), np.array([0,1]))
+    robot_model     = SingleIntegrator2D()
+    sensor          = sensor_model
     n,m = robot_model.n, robot_model.m
 
     
