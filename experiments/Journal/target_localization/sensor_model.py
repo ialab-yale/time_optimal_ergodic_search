@@ -69,12 +69,19 @@ class LocalizationSensorModel(SensorModel):
         dist = np.linalg.norm(query-pos)
         return (dist + np.random.normal(0, 2), bear)
     
-    def bearing(self, state, query):
-        return math.atan2(query[0]-state[0], query[1]-state[1])
+    def bearing(self, queryx, queryy, state):
+        return math.atan2(queryx-state[0], queryy-state[1])
     
-    def distance(self, state, query):
+    def bearingq(self, queryx, queryy):
+        return lambda s: math.atan2(queryx-s[0], queryy-s[1])
+    
+    def distance(self, queryx, queryy, state):
         pos=state[self.position_indices]
+        query = np.array([queryx, queryy])
         return np.linalg.norm(query-pos)
+    
+    def distanceq(self, queryx, queryy):
+        return lambda s: np.linalg.norm(np.array([queryx, queryy]) - s)
     
     def truth_function(self, state, query):
         '''
@@ -91,12 +98,12 @@ class LocalizationSensorModel(SensorModel):
         dist = self.distance(state, query)
         return (dist, bear)
     
-    def truth_deriv(self, state, query):
-        grad_dist_state = grad(self.distance, argnums=0)
-        grad_dist_query = grad(self.distance, argnums=1)
-        grad_bear_state = grad(self.bearing, argnums=0)
-        grad_bear_query = grad(self.bearing, argnums=1)
-        np.array([[grad_dist_state(state, query), grad_dist_query(state, query)], [grad_bear_state(state, query), grad_bear_query(state, query)]])
+    def truth_deriv(self, query):
+        grad_dist_x = grad(self.distanceq, argnums=0)
+        grad_dist_y = grad(self.distanceq, argnums=1)
+        grad_bear_x = grad(self.bearingq, argnums=0)
+        grad_bear_y = grad(self.bearingq, argnums=1)
+        return lambda s: np.array([[grad_dist_x(query[0], query[1])(s), grad_dist_y(query[0], query[1])(s)], [grad_bear_x(query[0], query[1])(s), grad_bear_y(query[0], query[1])(s)]])
     
 def get_sensor_ck(trajectory, sensor_model, distribution, basis, tf, dt):
     obs_array=sensor_model.compute_observation_array(trajectory,distribution._s)    #matrix (time by mesh vertices) that represents the amount each vertex on the mesh is observed at each point in time along the trajectory

@@ -8,6 +8,7 @@ import rospy
 from grid_map_msgs.msg import GridMap
 from std_msgs.msg import Float32MultiArray, MultiArrayLayout, MultiArrayDimension
 
+
 class ExpectedInformation(object):
     def __init__(self, wrksp_bnds) -> None:
         self.n = 2
