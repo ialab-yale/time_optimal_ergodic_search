@@ -13,7 +13,8 @@ import jax.debug as deb
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D
+from sensor_model import GaussianSensorModel, LocalizationSensorModel, get_sensor_ck
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator3D, SingleIntegrator2D
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
@@ -29,7 +30,7 @@ import yaml
 import pickle as pkl
 
 
-def build_erg_time_opt_solver(args, target_distr):
+def build_erg_time_opt_solver(args, target_distr, sensor_model):
     
     ## <--- I DO NOT LIKE THIS
     workspace_bnds = args['wrksp_bnds']
@@ -44,36 +45,14 @@ def build_erg_time_opt_solver(args, target_distr):
     
     basis           = BasisFunc(n_basis=[8,8], emap=emap)
     erg_metric      = ErgodicMetric(basis)
-    robot_model     = SingleIntegrator3D()
+    robot_model     = SingleIntegrator2D()
+    sensor          = sensor_model
     n,m = robot_model.n, robot_model.m
 
-    # with open('cluttered_env.yml', 'r') as file:
-    #     obs_info = yaml.safe_load(file)
-
-    # obs = []
-    # cbf_constr = []
-    # for _ob_inf in obs_info['obstacles']:
-    #     _ob = Obstacle(_ob_inf)
-    #         # pos=np.array(obs_info[obs_name]['pos']), 
-    #         # half_dims=np.array(obs_info[obs_name]['half_dims']),
-    #         # th=obs_info[obs_name]['rot']
-    #     obs.append(_ob)
-    #     cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
     
     args.update({
         'phik' : get_phik(target_distr.evals, basis),
     })
-
-
-
-    # opt_args = {
-    #     'N' : 100, 
-    #     'x0' : np.array([0.1, 0.1, 0., 0.]),
-    #     'xf' : np.array([0.9, 0.9, 0., 0.]),
-    #     'phik' : get_phik(target_distr.evals, basis),
-    #     'erg_ub' : 0.1,
-    #     # 'alpha' : 0.8,
-    # }
 
 
     def barrier_cost(e):
@@ -115,25 +94,15 @@ def build_erg_time_opt_solver(args, target_distr):
         tf = params['tf']
         N = args['N']
         dt = tf/N
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None))(x, u, args['alpha']).flatten() 
-        #            for _cbf_ineq in cbf_constr]
         ck = get_ck(x, basis, tf, dt)
+        ck = get_sensor_ck(x,sensor,target_distr,basis,N*dt,dt)
         erg = erg_metric(ck, phik)
         deb.print("erg: {a}", a=erg)
         _erg_ineq = [10*np.array([erg - args['erg_ub'], -tf])]
-        # _erg_ineq = [10*np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 2.).flatten()]
         _ctrl_disk = [(u[:,0]**2 + u[:,1]**2 - 1.2345).flatten()]
         return np.concatenate(_erg_ineq + _ctrl_disk)
-        # return np.concatenate(_erg_ineq + _ctrl_box + _cbf_ineq)
-        # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
-        # return np.array(0.)
-        # p = x[:,:2] # extract just the position component of the trajectory
-        # # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-        # obs_val = [vmap(_cbf_ineq)(x, u).flatten() for _cbf_ineq in self.cbf_consts]
-        # ctrl_box = [(np.abs(u) - 2.).flatten()]
-        # _ineq_list = ctrl_box + obs_val
-        # return np.array(0.)
+
 
 
     x = np.linspace(args['x0'], args['xf'], args['N'], endpoint=True)

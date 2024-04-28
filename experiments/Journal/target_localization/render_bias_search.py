@@ -6,7 +6,7 @@ from jax import vmap
 from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
-from target_distribution import TargetDistribution
+from distributions import TargetDistribution
 from build_solver import build_erg_time_opt_solver
 import pickle as pkl
 

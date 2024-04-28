@@ -2,12 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import jax.numpy as jnp
 from jax import vmap
+import math
 
 from drone_env_viz.msg import Trajectory
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
-from target_distribution import TargetDistribution
-from build_solver_revert import build_erg_time_opt_solver
+from distributions import ExpectedInformation, TargetBelief
+from sensor_model import GaussianSensorModel, LocalizationSensorModel, get_sensor_ck
+from build_solver import build_erg_time_opt_solver
 import pickle as pkl
 
 import rospy
@@ -42,24 +44,23 @@ if __name__ =="__main__":
 
     args = {
         'N' : 81, 
-        'x0' : np.array([0.944, 0.055, 0.]),
-        'xf' : np.array([0.055, 0.944, 0.]),
+        'x0' : np.array([0.944, 0.055]),
+        'xf' : np.array([0.055, 0.944]),
         'erg_ub' : 0.2,
         'alpha' : 0.5,
         'wrksp_bnds' : np.array([[0.,1.],[0.,1.]])
     }
-    # <-- prev values 
-    # args = {
-    #     'N' : 200, 
-    #     'x0' : np.array([0.5, 0.1]),
-    #     'xf' : np.array([2.0, 3.2]),
-    #     'erg_ub' : 0.2,
-    #     'alpha' : 0.5,
-    #     'wrksp_bnds' : np.array([[0.,3.5],[-1.,3.5]])
-    # }
-    target_distr    = TargetDistribution(args['wrksp_bnds'])
 
-    solver = build_erg_time_opt_solver(args, target_distr)
+    fisher = []
+    expect_info    = ExpectedInformation(args['wrksp_bnds'])
+    target_belief    = TargetBelief(args['wrksp_bnds'])
+    target_space = target_belief._s
+    sensor = LocalizationSensorModel(np.array([0,1]))
+    prior = target_belief
+    post = prior
+    targets = np.array([[0.5, 0.5]])
+
+    solver = build_erg_time_opt_solver(args, expect_info, sensor)
     sol = solver.get_solution()
     
     rate = rospy.Rate(10)
@@ -67,26 +68,41 @@ if __name__ =="__main__":
 
     print('publishing trajectory')
 
-    erg_ubs = [0.001270128]
-    # erg_ubs = erg_ubs[::-1]
+    erg_ub = 0.001270128
+    eta = 1.
+    sig = 1.
+    args.update({'erg_ub': erg_ub})
 
-    for i, erg_ub in enumerate(erg_ubs):
-        args.update({'erg_ub': erg_ub})
-
-        print('Solving trajectory for upper bound: ', erg_ub)
+    while True:
         solver.reset()
         solver.solve(args=args, max_iter=100000, eps=1e-6, alpha=1.002)
         sol = solver.get_solution()
-        with open('test.pkl', 'wb') as fp:
-            pkl.dump(sol, fp)
-        # agent_viz.callback_trajectory(sol['x'])
-        # env_viz.pub_env()
+        # with open('test.pkl', 'wb') as fp:
+        #     pkl.dump(sol, fp)
+
         text_msg.text = 'Optimal Time: {:.2f}'.format(sol['tf']) + '\n' + 'Maximum Ergodicity: {}'.format(erg_ub)
         print(text_msg.text)
-        for _ in range(100):
-        
-            
 
+        # Update the prior of target belief
+        for i, _target in enumerate(target_space):
+            p = 1.
+            for x in sol:
+                Upsilon = sensor.compute_truth(x, _target)
+                Vk = sensor.compute_observation_array(x, targets)
+                p *= (1/(math.sqrt(2*math.pi)*sig)) * np.exp((Vk-Upsilon)**2/(-2*sig**2))
+                post.evals[i] = prior.evals[i] * p
+        post.evals /= np.sum(post.evals)    # Check reassignments
+
+        # Compute Fisher information
+        for i, _target in enumerate(target_space):
+            fisher.append(lambda s: (1/sig**2)*sensor.truth_deriv(_target)(s)*post.evals[i])
+        
+        for i, val in enumerate(fisher):
+            expect_info.evals[i] = np.linalg.det(val(target_space[i]))
+
+        # Update expected information map
+
+        for _ in range(100):
             for i, _pt in enumerate(sol['x']):
                 traj_msg.points[i].x = _pt[0]
                 traj_msg.points[i].y = _pt[1]
@@ -100,28 +116,6 @@ if __name__ =="__main__":
                     agent_name,
                     "world"
                 )
-            target_distr.pub_map()
+            expect_info.pub_map()
             rate.sleep()
-
-
-
-
-
-## <---- below draws the objects with matplotlib ---->
-# for obs in traj_opt.obs:
-#     _patch = obs.draw()
-#     plt.gca().add_patch(_patch)
-
-# X, Y = np.meshgrid(*[np.linspace(wks[0],wks[1]) for wks in args['wrksp_bnds']])
-# pnts = np.vstack([X.ravel(), Y.ravel()]).T
-
-# _mixed_vals = np.inf * np.ones_like(X)
-# for ob in obs:
-#     _vals = np.array([ob.distance(pnt) for pnt in pnts]).reshape(X.shape)
-#     _mixed_vals = np.minimum(_vals, _mixed_vals)
-
-#     plt.contour(X, Y, _vals.reshape(X.shape), levels=[-0.01,0.,0.01])
-
-# plt.plot(sol['x'][:,0], sol['x'][:,1],'g.')
-# plt.plot(sol['x'][:,0], sol['x'][:,1])
-# plt.show()
+        
