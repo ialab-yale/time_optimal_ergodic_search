@@ -25,21 +25,13 @@ class AugmentedLagrangeSolver(object):
             self.avg_sq_grad.update({_key : np.zeros_like(self.solution[_key])})
 
         self._prev_val = None
-        # self._flat_solution, self._unravel = ravel_pytree(self.solution)
         def lagrangian(solution, dual_solution, args, c):
-            # solution = self._unravel(flat_solution)
             lam = dual_solution['lam']
             mu  = dual_solution['mu']
             _eq_constr   = eq_constr(solution, args)
             _ineq_constr = ineq_constr(solution, args)
             a = np.sum(lam * _eq_constr + c*0.5 * (_eq_constr)**2)
             b = (1/c)*0.5 * np.sum(np.maximum(0., mu + c*_ineq_constr)**2 - mu**2)
-            # deb.print("eq: {a}", a=np.max(_eq_constr))
-            # deb.print("ineq: {a}", a=np.max(_ineq_constr))
-            # deb.print("ineq: {a}", a=_ineq_constr[:2])
-            # deb.print("eq full: {a}", a=a)
-            # deb.print("ineq full: {a}", a=b)
-            # deb.print("loss: {a}", a=np.max(loss(solution, args)))
             return loss(solution, args) \
                 + a \
                 + b
@@ -55,9 +47,6 @@ class AugmentedLagrangeSolver(object):
                 avg_sq_grad[_key] = avg_sq_grad[_key] * gamma + np.square(_dldx[_key]) * (1. - gamma)
                 solution[_key] = solution[_key] - step_size * _dldx[_key] / np.sqrt(avg_sq_grad[_key] + eps)
 
-            # _eps    = np.linalg.norm(_dldx['x'])
-            # avg_sq_grad = avg_sq_grad * gamma + np.square(_dldx['x']) * (1. - gamma)
-            # solution['x']   = solution['x'] - step_size * _dldx['x'] / np.sqrt(avg_sq_grad + eps)
             dual_solution['lam'] = dual_solution['lam'] + c*eq_constr(solution, args)
             dual_solution['mu']  = np.maximum(0, dual_solution['mu'] + c*ineq_constr(solution, args))
             return solution, dual_solution, avg_sq_grad, _val
@@ -67,7 +56,6 @@ class AugmentedLagrangeSolver(object):
         self.step = step
 
     def reset(self):
-        # pass
         for _key in self.avg_sq_grad:
             self.avg_sq_grad.update({_key : np.zeros_like(self.avg_sq_grad[_key])})
         self.c = self._c_def
