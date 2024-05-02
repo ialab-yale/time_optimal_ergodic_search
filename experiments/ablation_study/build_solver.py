@@ -12,7 +12,7 @@ import jax.numpy as np
 from jax.flatten_util import ravel_pytree
 
 import numpy as onp
-from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator
+from time_opt_erg_lib.dynamics import DoubleIntegrator, SingleIntegrator2D
 
 from time_opt_erg_lib.ergodic_metric import ErgodicMetric
 from time_opt_erg_lib.obstacle import Obstacle
@@ -34,34 +34,10 @@ def build_erg_time_opt_solver(init_sol, args, step_size=1e-3, c=1.0):
     n,m = robot_model.n, robot_model.m
     target_distr    = TargetDistribution()
     workspace_bnds = [[0.,1.0],[0.,1.0]]
-
-    # with open('../config/obs.yml', 'r') as file:
-    #     obs_info = yaml.safe_load(file)
-
-
-    # no obstacles in this example
-    # obs = []
-    # cbf_constr = []
-    # for obs_name in obs_info:
-    #     _ob = Obstacle(obs_info[obs_name])
-    #         # pos=np.array(obs_info[obs_name]['pos']), 
-    #         # half_dims=np.array(obs_info[obs_name]['half_dims']),
-    #         # th=obs_info[obs_name]['rot']
-    #     obs.append(_ob)
-    #     cbf_constr.append(sdf2cbf(robot_model.dfdt, _ob.distance))
-    
+   
     args.update({
         'phik' : get_phik(target_distr.evals, basis),
     })
-
-    # opt_args = {
-    #     'N' : 100, 
-    #     'x0' : np.array([0.1, 0.1, 0., 0.]),
-    #     'xf' : np.array([0.9, 0.9, 0., 0.]),
-    #     'phik' : get_phik(target_distr.evals, basis),
-    #     'erg_ub' : 0.1,
-    #     # 'alpha' : 0.8,
-    # }
 
     @vmap
     def emap(x):
@@ -110,20 +86,12 @@ def build_erg_time_opt_solver(init_sol, args, step_size=1e-3, c=1.0):
         N = args['N']
         dt = tf/N
         e = emap(x)
-        # _cbf_ineq = [vmap(_cbf_ineq, in_axes=(0,0,None, None))(x, u, args['alpha'], dt).flatten() 
-        #            for _cbf_ineq in cbf_constr]
+
         ck = get_ck(e, basis, tf, dt)
         _erg_ineq = [np.array([erg_metric(ck, phik) - args['erg_ub'], -tf])]
         _ctrl_box = [(np.abs(u) - 1.).flatten()]
-        return np.concatenate(_erg_ineq + _ctrl_box)# + _cbf_ineq)
-        # return np.array([erg_metric(ck, phik) - 0.001, -tf] + [(np.abs(u) - 2.).flatten()])
-        # return np.array(0.)
-        # p = x[:,:2] # extract just the position component of the trajectory
-        # # obs_val = [vmap(_ob.distance)(p).flatten() for _ob in self.obs]
-        # obs_val = [vmap(_cbf_ineq)(x, u).flatten() for _cbf_ineq in self.cbf_consts]
-        # ctrl_box = [(np.abs(u) - 2.).flatten()]
-        # _ineq_list = ctrl_box + obs_val
-        # return np.array(0.)
+        _expl_box = [(-e).flatten(), (e-1.0).flatten()]
+        return np.concatenate(_erg_ineq + _ctrl_box + _expl_box)
 
 
     solver = AugmentedLagrangeSolver(
