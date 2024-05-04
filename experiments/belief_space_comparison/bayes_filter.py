@@ -33,17 +33,14 @@ class BayesFilter(object):
         return np.sum(vmap(np.dot)(_instant_eid, self._prior), axis=0)
         
     def plot_eid(self):
-        # plt.contourf(self.domain[0], self.domain[1], self.evals[0].reshape(self.domain[0].shape))
-        plt.imshow(self.evals[0].reshape(self.domain[0].shape), extent=(-2,2,-2,2), origin='lower')
+        plt.contour(self.domain[0], self.domain[1], self.evals[0].reshape(self.domain[0].shape))
 
     def plot_prior(self):
-        plt.imshow(self.domain[0], self.domain[1], self._prior.reshape(self.domain[0].shape))
-
+        plt.contour(self.domain[0], self.domain[1], self._prior.reshape(self.domain[0].shape))
     def update_prior(self, x, y):
-        self._prior = self._prior * np.exp(-0.5*(vmap(self.meas_model, in_axes=(0, None))(self._s, x)-y)**2)
+        self._prior = self._prior * np.exp(-10*(vmap(self.meas_model, in_axes=(0, None))(self._s, x)-y)**2)
         self._prior = self._prior + 1e-5
         self._prior = self._prior/np.sum(self._prior)
-
     def update_eid(self):   
         fish_val = lambda x: np.linalg.det(self.eid(x))
         self.evals = (vmap(fish_val)(self._s), self._s)
