@@ -28,8 +28,8 @@ from time_opt_erg_lib.opt_solver import AugmentedLagrangeSolver
 import yaml
 import pickle as pkl
 
-def build_erg_time_opt_solver(init_sol, args, step_size=1e-3, c=1.0):
-    basis           = BasisFunc(n_basis=[8,8])
+def build_erg_time_opt_solver(init_sol, args, num_basis=8, step_size=1e-3, c=1.0):
+    basis           = BasisFunc(n_basis=[num_basis]*2)
     erg_metric      = ErgodicMetric(basis)
     robot_model     = DoubleIntegrator()
     n,m = robot_model.n, robot_model.m
