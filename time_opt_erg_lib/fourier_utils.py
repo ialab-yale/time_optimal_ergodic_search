@@ -12,7 +12,7 @@ def get_hk(k): # normalizing factor for basis function
 
 def get_ck(trajectory, basis, tf, dt):
     ck = np.sum(vmap(basis.fk_vmap)(trajectory), axis=0)
-    ck = ck / basis.hk_list
+    # ck = ck / basis.hk_list
     ck = ck * dt / tf
     return ck
 
@@ -20,7 +20,7 @@ def get_phik(vals, basis):
     _phi, _x = vals 
     phik = np.dot(_phi, vmap(basis.fk_vmap)(_x))
     phik = phik/phik[0]
-    phik = phik/basis.hk_list
+    # phik = phik/basis.hk_list
     return phik
 
 def recon_from_fourier(basis_coef, basis, k_list, x_vals, normalize=False):

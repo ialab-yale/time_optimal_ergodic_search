@@ -1,6 +1,6 @@
 import jax.numpy as np
 from jax import vmap
-from jax import hessian
+from jax import hessian, jacfwd
 import numpy as onp
 import matplotlib.pyplot as plt
 
@@ -22,29 +22,37 @@ class BayesFilter(object):
             ]
         )
         self.meas_model = meas_model
-        self.score = hessian(meas_model)
+        def logp(p, x, y):
+            return -10.5 * np.sum((meas_model(p, x) - y)**2)
+        self.logp = logp
+        self.score = jacfwd(meas_model)
         self._s = np.stack([X.ravel() for X in self.domain]).T
         self._prior = vmap(prior)(self._s)
         # normalize just in case 
         self._prior = self._prior/np.sum(self._prior)
         self.evals = (self._prior, self._s)
+        self.fish_evals = (self._prior.copy(), self._s)
     def eid(self, x):
         _instant_eid = vmap(self.score, in_axes=(0, None))(self._s, x)
+        _instant_eid = vmap(np.outer)(_instant_eid, _instant_eid)
         return np.sum(vmap(np.dot)(_instant_eid, self._prior), axis=0)
         
     def plot_eid(self):
         # plt.contourf(self.domain[0], self.domain[1], self.evals[0].reshape(self.domain[0].shape))
-        plt.imshow(self.evals[0].reshape(self.domain[0].shape), extent=(-2,2,-2,2), origin='lower')
+        plt.imshow(self.fish_evals[0].reshape(self.domain[0].shape), extent=(-2,2,-2,2), origin='lower')
 
     def plot_prior(self):
-        plt.imshow(self.domain[0], self.domain[1], self._prior.reshape(self.domain[0].shape))
+        # plt.imshow(self.domain[0], self.domain[1], self._prior.reshape(self.domain[0].shape))
+        plt.imshow(self._prior.reshape(self.domain[0].shape), extent=(-2,2,-2,2), origin='lower')
 
     def update_prior(self, x, y):
-        self._prior = self._prior * np.exp(-0.5*(vmap(self.meas_model, in_axes=(0, None))(self._s, x)-y)**2)
+        self._prior = self._prior * np.exp(vmap(self.logp,in_axes=(0, None,None))(self._s, x, y))
         self._prior = self._prior + 1e-5
         self._prior = self._prior/np.sum(self._prior)
 
     def update_eid(self):   
         fish_val = lambda x: np.linalg.det(self.eid(x))
-        self.evals = (vmap(fish_val)(self._s), self._s)
+        self.fish_evals = (vmap(fish_val)(self._s), self._s)
+        return self.fish_evals
+        # self.evals = (vmap(fish_val)(self._s), self._s)
 

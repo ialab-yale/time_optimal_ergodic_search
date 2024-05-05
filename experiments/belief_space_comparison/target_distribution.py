@@ -30,7 +30,8 @@ class TargetDistribution(object):
         plt.contour(self.domain[0], self.domain[1], self.evals[0].reshape(self.domain[0].shape))
 
     def p(self, x):
-        return 0.25*(np.exp(-10.5 * np.sum((x[:2] - np.array([1.0, -0.5]))**2)) \
+        return 1/(1 + )
+    0.25*(np.exp(-10.5 * np.sum((x[:2] - np.array([1.0, -0.5]))**2)) \
                 + np.exp(-10.5 * np.sum((x[:2] - np.array([2.5, .0]))**2)) \
                 + np.exp(-10.5 * np.sum((x[:2] - np.array([1.2, 2.0]))**2)) \
                     + np.exp(-10.5 * np.sum((x[:2] - np.array([2.5, 3.0]))**2)))
