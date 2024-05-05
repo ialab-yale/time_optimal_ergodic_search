@@ -82,7 +82,7 @@ class AugmentedLagrangeSolver(object):
             if _eps < eps:
                 print('done in ', k, ' iterations')
                 return
-        print('unsuccessful, tol: ', _eps)
+        # print('unsuccessful, tol: ', _eps)
 
 if __name__=='__main__':
     '''
