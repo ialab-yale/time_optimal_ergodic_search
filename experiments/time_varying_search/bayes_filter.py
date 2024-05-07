@@ -55,4 +55,10 @@ class BayesFilter(object):
         self.fish_evals = (vmap(fish_val)(self._s), self._s)
         return self.fish_evals
         # self.evals = (vmap(fish_val)(self._s), self._s)
+    
+    def get_mean_var(self):
+        mean = self._prior @ self._s
+        dmean = mean-self._s
+        var = np.sum(vmap(np.dot)(vmap(np.outer)(dmean, dmean), self._prior), axis=0)
+        return mean, var
 
