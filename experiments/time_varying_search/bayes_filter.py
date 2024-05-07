@@ -23,7 +23,7 @@ class BayesFilter(object):
         )
         self.meas_model = meas_model
         def logp(p, x, y):
-            return -10.5 * np.sum((meas_model(p, x) - y)**2)
+            return -10.0 * np.sum((meas_model(p, x) - y)**2)
         self.logp = logp
         self.score = jacfwd(meas_model)
         self._s = np.stack([X.ravel() for X in self.domain]).T
