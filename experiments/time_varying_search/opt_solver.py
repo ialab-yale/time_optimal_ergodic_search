@@ -74,9 +74,9 @@ class AugmentedLagrangeSolver(object):
         for k in range(max_iter):
             # self.solution, _val, self.avg_sq_grad = self.step(self.solution, args, self.avg_sq_grad, self.c)
             self.solution, self.dual_solution, self.avg_sq_grad, _val, _dldx = self.step(self.solution, self.dual_solution, self.avg_sq_grad, args, self.c)
-            # _grad_total = 0.0
-            # for _key in _dldx:
-            #     _grad_total = _grad_total + np.linalg.norm(_dldx[_key])
+            _grad_total = 0.0
+            for _key in _dldx:
+                _grad_total = _grad_total + np.linalg.norm(_dldx[_key])
             # print(_grad_total)
             self.c = alpha*self.c
             if _prev_val is None:
@@ -84,13 +84,13 @@ class AugmentedLagrangeSolver(object):
             else:
                 _eps = onp.abs(_val - _prev_val)
                 _prev_val = _val
-            # if _grad_total < eps:
-            #     print('done in ', k, ' iterations')
-            #     return
-            if _eps < eps:
-                print('done in ', k, ' iterations', _eps)
+            if _grad_total < eps:
+                print('done in ', k, ' iterations', _grad_total)
                 return
-        print('unsuccessful, tol: ', _eps)
+            # if _eps < eps:
+            #     print('done in ', k, ' iterations', _eps)
+            #     return
+        print('unsuccessful, tol: ', _grad_total)
 
 if __name__=='__main__':
     '''
