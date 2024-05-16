@@ -236,9 +236,11 @@ while planner._ck_dynamics._t_curr < t_max:
     args.update({
         'phik' : get_phik(_fish_evals, planner.basis)
     })
-    args.update({'erg_ub' : _percent_max*(
-        planner.erg_metric(unif_phik, args['phik']) + planner.erg_metric(0*unif_phik, args['phik'])
-        )})
+    # args.update({'erg_ub' : _percent_max*(
+    #     0*planner.erg_metric(unif_phik, args['phik']) + planner.erg_metric(0*unif_phik, args['phik'])
+    #     )})
+    args.update({'erg_ub' : _percent_max*planner.erg_metric(0*unif_phik, args['phik'])
+    })
     t_lap = 0
     planner.time_shift_plan()
     if np.linalg.det(var) < 1e-2:

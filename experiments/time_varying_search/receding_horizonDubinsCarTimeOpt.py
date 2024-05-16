@@ -208,7 +208,7 @@ logger = Logger(_true_p)
 t_lap = 0
 _percent_max = 0.01
 unif_phik = get_phik(target_distribution.evals, planner.basis)
-args.update({'erg_ub' : _percent_max*planner.erg_metric(unif_phik, 2*unif_phik)})
+args.update({'erg_ub' : _percent_max*planner.erg_metric(unif_phik, 0*unif_phik)})
 
 t_max = 20 
 while planner._ck_dynamics._t_curr < t_max:
@@ -242,13 +242,12 @@ while planner._ck_dynamics._t_curr < t_max:
     args.update({
         'phik' : get_phik(_fish_evals, planner.basis)
     })
-    args.update({'erg_ub' : _percent_max*(
-        planner.erg_metric(unif_phik, 0*args['phik']) + 2*planner.erg_metric(0*unif_phik, args['phik'])
-        )})
+    args.update({'erg_ub' : _percent_max*planner.erg_metric(0*unif_phik, args['phik'])
+    })
     t_lap = 0
     
     planner.time_shift_plan()
     if np.linalg.det(var) < 1e-2:
         print('time elapsed ', planner._ck_dynamics._t_curr)
         break
-pkl.dump(logger, open('./data/time_opt_receding_horizon_trial{}.pkl'.format(parsed_args.trial), 'wb'))
+pkl.dump(logger, open('./data/time_opt_receding_horizon_test_trial{}.pkl'.format(parsed_args.trial), 'wb'))
