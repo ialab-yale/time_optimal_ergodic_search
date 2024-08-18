@@ -96,12 +96,20 @@ if __name__=='__main__':
     '''
         Example use case 
     '''
-    def f(x, args=None) : return 13*x[0]**2 + 10*x[0]*x[1] + 7*x[1]**2 + x[0] + x[1]
-    def g(x, args) : return np.array([2*x[0]-5*x[1]-2])
-    def h(x, args) : return x[0] + x[1] -1
+
+    def f(params, args=None) : 
+        x = params['x']
+        return 13*x[0]**2 + 10*x[0]*x[1] + 7*x[1]**2 + x[0] + x[1]
+    def g(params, args) : 
+        x = params['x']
+        return np.array([2*x[0]-5*x[1]-2])
+    def h(params, args) : 
+        x = params['x']
+        return x[0] + x[1] -1
 
     x0 = np.array([.5,-0.3])
-    opt = AugmentedLagrangian(x0,f,g,h, step_size=0.1)
+    params = {'x' : x0}
+    opt = AugmentedLagrangeSolver(params,f,g,h, step_size=0.1)
     opt.solve(max_iter=1000)
     sol = opt.get_solution()
-    print(f(sol['x']), sol['x'])
+    print(f(sol), sol)
